@@ -61,6 +61,9 @@ to your vimrc
 	- `luaSelf`
 - Operator symbols are now highlighted
 	- `luaSymbol`
+- Varargs has a separate highlight group to not get highlighted as a partial
+  concatenation operator
+  	- `luaVarargs`
 # Not-Changes
 - The clever error checking via syntax highlighting is still there with out of
   place keywords and mismatched parens getting highlighted

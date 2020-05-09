@@ -39,6 +39,9 @@ syn match luaSymbol "\V.."
 syn match luaSymbol "\V="
 syn match luaSymbol "\V#"
 
+
+syn match luaVarargs "\V..."
+
 " Comments
 " First line may start with #!
 syn match   luaComment "\%^#!.*"
