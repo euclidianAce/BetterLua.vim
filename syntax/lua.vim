@@ -23,8 +23,23 @@ syn case match
 " syncing method
 syn sync minlines=100
 
-" Comments
+" operators
+syn match luaSymbol "\V+"
+syn match luaSymbol "\V-"
+syn match luaSymbol "\V*"
+syn match luaSymbol "\V/"
+syn match luaSymbol "\V^"
+syn match luaSymbol "\V%"
+syn match luaSymbol "\V&"
+syn match luaSymbol "\V~"
+syn match luaSymbol "\V|"
+syn match luaSymbol "\V>"
+syn match luaSymbol "\V<"
+syn match luaSymbol "\V.."
+syn match luaSymbol "\V="
+syn match luaSymbol "\V#"
 
+" Comments
 " First line may start with #!
 syn match   luaComment "\%^#!.*"
 syn region  luaComment start="--" end="$" contains=luaTodo,luaDoc,@Spell
@@ -126,22 +141,6 @@ if lua_subversion >= 2
   syn keyword luaStatement goto
   syn match luaLabel "::\I\i*::"
 endif
-
-" operators
-syn match luaSymbol "\V+"
-syn match luaSymbol "\V-"
-syn match luaSymbol "\V*"
-syn match luaSymbol "\V/"
-syn match luaSymbol "\V^"
-syn match luaSymbol "\V%"
-syn match luaSymbol "\V&"
-syn match luaSymbol "\V~"
-syn match luaSymbol "\V|"
-syn match luaSymbol "\V>"
-syn match luaSymbol "\V<"
-syn match luaSymbol "\V.."
-syn match luaSymbol "\V="
-syn match luaSymbol "\V#"
 
 " integer number
 syn match luaNumber "\<\d\+\>"
