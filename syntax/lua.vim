@@ -127,6 +127,21 @@ if lua_subversion >= 2
   syn match luaLabel "::\I\i*::"
 endif
 
+" operators
+syn match luaSymbol "\V+"
+syn match luaSymbol "\V-"
+syn match luaSymbol "\V*"
+syn match luaSymbol "\V/"
+syn match luaSymbol "\V^"
+syn match luaSymbol "\V%"
+syn match luaSymbol "\V&"
+syn match luaSymbol "\V~"
+syn match luaSymbol "\V|"
+syn match luaSymbol "\V>"
+syn match luaSymbol "\V<"
+syn match luaSymbol "\V.."
+syn match luaSymbol "\V="
+syn match luaSymbol "\V#"
 
 " integer number
 syn match luaNumber "\<\d\+\>"
@@ -341,6 +356,7 @@ hi def link luaLocalAttrib      StorageClass
 hi def link luaDocAnnotation    Keyword
 hi def link luaDocName          Identifier
 hi def link luaDocType          Type
+hi def link luaSymbol           Operator
 
 
 let b:current_syntax = "lua"

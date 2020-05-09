@@ -59,7 +59,8 @@ to your vimrc
 			- or `@type string` for var annotations
 - Self, while not a keyword, has a highlight group
 	- `luaSelf`
-
+- Operator symbols are now highlighted
+	- `luaSymbol`
 # Not-Changes
 - The clever error checking via syntax highlighting is still there with out of
   place keywords and mismatched parens getting highlighted
