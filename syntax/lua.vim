@@ -90,7 +90,7 @@ syn match  luaBraceError "}"
 syn match  luaError "\<\%(end\|else\|elseif\|then\|until\|in\)\>"
 
 " function ... end
-syn region luaFunctionBlock transparent matchgroup=luaFunction start="\<function\>" end="\<end\>" contains=ALLBUT,@luaDocComment,@luaLocal,luaTodo,luaSpecial,luaElseifThen,luaElse,luaThenEnd,luaIn
+syn region luaFunctionBlock transparent matchgroup=luaFunction start="\<function\>" end="\<end\>" contains=ALLBUT,@luaDocComment,luaTodo,luaSpecial,luaElseifThen,luaElse,luaThenEnd,luaIn
 
 " if ... then
 syn region luaIfThen transparent matchgroup=luaCond start="\<if\>" end="\<then\>"me=e-4           contains=ALLBUT,@luaDocComment,@luaLocal,luaTodo,luaSpecial,luaElseifThen,luaElse,luaIn nextgroup=luaThenEnd skipwhite skipempty
@@ -105,13 +105,13 @@ syn region luaElseifThen contained transparent matchgroup=luaCond start="\<elsei
 syn keyword luaElse contained else
 
 " do ... end
-syn region luaBlock transparent matchgroup=luaStatement start="\<do\>" end="\<end\>"          contains=ALLBUT,@luaDocComment,@luaLocal,luaTodo,luaSpecial,luaElseifThen,luaElse,luaThenEnd,luaIn
+syn region luaBlock transparent matchgroup=luaStatement start="\<do\>" end="\<end\>"          contains=ALLBUT,@luaDocComment,luaTodo,luaSpecial,luaElseifThen,luaElse,luaThenEnd,luaIn
 
 " repeat ... until
 syn region luaLoopBlock transparent matchgroup=luaRepeat start="\<repeat\>" end="\<until\>"   contains=ALLBUT,@luaDocComment,@luaLocal,luaTodo,luaSpecial,luaElseifThen,luaElse,luaThenEnd,luaIn
 
 " while ... do
-syn region luaLoopBlock transparent matchgroup=luaRepeat start="\<while\>" end="\<do\>"me=e-2 contains=ALLBUT,@luaDocComment,@luaLocal,luaTodo,luaSpecial,luaIfThen,luaElseifThen,luaElse,luaThenEnd,luaIn nextgroup=luaBlock skipwhite skipempty
+syn region luaLoopBlock transparent matchgroup=luaRepeat start="\<while\>" end="\<do\>"me=e-2 contains=ALLBUT,@luaDocComment,luaTodo,luaSpecial,luaIfThen,luaElseifThen,luaElse,luaThenEnd,luaIn nextgroup=luaBlock skipwhite skipempty
 
 " for ... do and for ... in ... do
 syn region luaLoopBlock transparent matchgroup=luaRepeat start="\<for\>" end="\<do\>"me=e-2   contains=ALLBUT,@luaDocComment,@luaLocal,luaTodo,luaSpecial,luaIfThen,luaElseifThen,luaElse,luaThenEnd nextgroup=luaBlock skipwhite skipempty
