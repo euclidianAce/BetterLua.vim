@@ -65,7 +65,7 @@ syn cluster luaDocComment contains=luaDoc,luaDoc1,luaDocAnnotation,luaDoc2,luaDo
 hi def link luaDocType1 luaDocType
 hi def link luaDocType2 luaDocType
 
-syn region  luaComment matchgroup=luaComment start="--\[\z(=*\)\[" end="\]\z1\]" contains=luaTodo,@Spell
+syn region  luaComment matchgroup=luaComment start="--\[\z(=*\)\[" end="\]\z1\]" contains=luaTodo,luaDoc,@Spell
 syn keyword luaTodo contained TODO FIXME XXX
 
 " Function call
