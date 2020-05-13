@@ -41,29 +41,93 @@ syn match luaSymbol "\V#"
 
 syn match luaVarargs "\V..."
 
+" EmmyLua Comments
+syn match emmyLua "---.*" transparent contains=@emmyLuaGroup containedin=luaComment
+
+syn cluster emmyLuaGroup add=emmyLuaAnnotation
+syn cluster emmyLuaGroup add=emmyLuaTypeName
+syn cluster emmyLuaGroup add=emmyLuaTypeSymbols
+syn cluster emmyLuaGroup add=emmyLuaVarName
+syn cluster emmyLuaGroup add=emmyLuaAliasName
+syn cluster emmyLuaGroup add=emmyLuaAliasType
+syn cluster emmyLuaGroup add=emmyLuaComment
+
+syn match emmyLuaComment "@.*" contained
+" @ keywords
+"---@class MY_TYPE[:PARENT_TYPE] [@comment]
+syn match emmyLuaAnnotation "@class"
+  \ nextgroup=emmyLuaTypeAndSuperType 
+  \ skipwhite
+  \ containedin=emmyLua
+"---@type MY_TYPE[|OTHER_TYPE] [@comment]
+"---@type MY_TYPE[]
+"---@type table<KEY_TYPE, VALUE_TYPE>
+"---@type fun(param:MY_TYPE):RETURN_TYPE
+syn match emmyLuaAnnotation "@type"
+  \ nextgroup=emmyLuaTypes 
+  \ skipwhite
+  \ containedin=emmyLua
+"---@alias NEW_NAME TYPE
+syn match emmyLuaAnnotation "@alias"
+  \ nextgroup=emmyLuaAliasName
+  \ skipwhite
+  \ containedin=emmyLua
+"---@param param_name MY_TYPE[|other_type] [@comment]
+syn match emmyLuaAnnotation "@param"
+  \ nextgroup=emmyLuaVarName
+  \ skipwhite
+  \ containedin=emmyLua
+"---@return MY_TYPE[|OTHER_TYPE] [@comment]
+syn match emmyLuaAnnotation "@return"
+  \ nextgroup=emmyLuaTypes
+  \ skipwhite
+  \ containedin=emmyLua
+"---@field [public|protected|private] field_name FIELD_TYPE[|OTHER_TYPE] [@comment]
+syn match emmyLuaAnnotation "@field"
+  \ nextgroup=emmyLuaTypes
+  \ skipwhite
+  \ containedin=emmyLua
+"---@generic T1 [: PARENT_TYPE] [, T2 [: PARENT_TYPE]]
+syn match emmyLuaAnnotation "@generic"
+  \ nextgroup=emmyLuaTypes
+  \ skipwhite
+  \ containedin=emmyLua
+"---@vararg TYPE
+syn match emmyLuaAnnotation "@vararg"
+  \ nextgroup=emmyLuaTypes
+  \ skipwhite
+  \ containedin=emmyLua
+"---@language LANGUAGE_ID
+syn match emmyLuaAnnotation "@language"
+  \ nextgroup=emmyLuaTypes
+  \ skipwhite
+  \ containedin=emmyLua
+"---@see
+syn match emmyLuaAnnotation "@see"
+  \ nextgroup=emmyLuaTypes
+  \ skipwhite
+  \ containedin=emmyLua
+
+syn match emmyLuaAliasName "\w\+" nextgroup=emmyLuaAliasType skipwhite containedin=emmyLua contained
+syn match emmyLuaAliasType "\w\+" nextgroup=emmyLuaComment skipwhite containedin=emmyLua contained
+
+syn match emmyLuaVarName "\w\+" nextgroup=emmyLuaTypes containedin=emmyLua contained
+
+syn match emmyLuaTypeAndSuperTypes "\w\+\s*\(\:\s*\w\+\s*\)*" containedin=emmyLua transparent
+syn match emmyLuaTypes "\w\+\s*\(|\s*\w\+\s*\)*" containedin=emmyLua transparent contained
+syn match emmyLuaTypeName "\w\+" containedin=emmyLua contained
+syn match emmyLuaTypeSymbols ":" containedin=emmyLuaTypeAndSuperTypes contained
+syn match emmyLuaTypeSymbols "|" containedin=emmyLuaTypes contained
+syn match emmyLuaBrackets ">" containedin=emmyLua contained
+syn match emmyLuaBrackets "<" containedin=emmyLua contained
+syn match emmyLuaBrackets "\[" containedin=emmyLua contained
+syn match emmyLuaBrackets "\]" containedin=emmyLua contained
+syn match emmyLuaBrackets "," containedin=emmyLua contained
+
 " Comments
 " First line may start with #!
 syn match   luaComment "\%^#!.*"
-syn region  luaComment start="--" end="$" contains=luaTodo,luaDoc,@Spell
-
-syn match luaDoc "@.*" contains=luaDoc3,luaDoc2,luaDoc1 contained transparent
-
-syn match luaDoc1 "@\w\+"                 contained contains=luaDocAnnotation transparent
-syn match luaDoc2 "@\w\+\s\+\S\+"         contained contains=luaDocAnnotation,luaDocType1 transparent
-syn match luaDocType1 "\s\+\S\+"          contained
-
-syn match luaDoc3 "@\w\+\s\+\S\+\s\+\S\+" contained contains=luaDocAnnotation,luaDocNameType transparent
-
-syn match luaDocNameType "\S\+\s\+\S\+"   contained contains=luaDocName,luaDocType2 transparent
-
-syn match luaDocName "\S\+\ze\s\+"        contained
-syn match luaDocType2 "\s\+\S\+"          contained
-
-syn match luaDocAnnotation "@\w\+"        contained
-
-syn cluster luaDocComment contains=luaDoc,luaDoc1,luaDocAnnotation,luaDoc2,luaDocType1,luaDoc3,luaDocNameType,luaDocName,luaDocType2
-hi def link luaDocType1 luaDocType
-hi def link luaDocType2 luaDocType
+syn region  luaComment start="--" end="$" contains=luaTodo,emmyLua,@Spell
 
 syn region  luaComment matchgroup=luaComment start="--\[\z(=*\)\[" end="\]\z1\]" contains=luaTodo,luaDoc,@Spell
 syn keyword luaTodo contained TODO FIXME XXX
@@ -82,39 +146,39 @@ syn keyword luaSelf self
 
 " catch errors caused by wrong parenthesis and wrong curly brackets or
 " keywords placed outside their respective blocks
-syn region luaParen      transparent                     start='(' end=')' contains=ALLBUT,@luaDocComment,@luaLocal,luaParenError,luaTodo,luaSpecial,luaIfThen,luaElseifThen,luaElse,luaThenEnd,luaBlock,luaLoopBlock,luaIn,luaStatement
-syn region luaTableBlock transparent matchgroup=luaTable start="{" end="}" contains=ALLBUT,@luaDocComment,@luaLocal,luaBraceError,luaTodo,luaSpecial,luaIfThen,luaElseifThen,luaElse,luaThenEnd,luaBlock,luaLoopBlock,luaIn,luaStatement
+syn region luaParen      transparent                     start='(' end=')' contains=ALLBUT,emmyLua,@emmyLuaGroup,@luaLocal,luaParenError,luaTodo,luaSpecial,luaIfThen,luaElseifThen,luaElse,luaThenEnd,luaBlock,luaLoopBlock,luaIn,luaStatement
+syn region luaTableBlock transparent matchgroup=luaTable start="{" end="}" contains=ALLBUT,emmyLua,@emmyLuaGroup,@luaLocal,luaBraceError,luaTodo,luaSpecial,luaIfThen,luaElseifThen,luaElse,luaThenEnd,luaBlock,luaLoopBlock,luaIn,luaStatement
 
 syn match  luaParenError ")"
 syn match  luaBraceError "}"
 syn match  luaError "\<\%(end\|else\|elseif\|then\|until\|in\)\>"
 
 " function ... end
-syn region luaFunctionBlock transparent matchgroup=luaFunction start="\<function\>" end="\<end\>" contains=ALLBUT,@luaDocComment,luaTodo,luaSpecial,luaElseifThen,luaElse,luaThenEnd,luaIn
+syn region luaFunctionBlock transparent matchgroup=luaFunction start="\<function\>" end="\<end\>" contains=ALLBUT,emmyLua,@emmyLuaGroup,luaTodo,luaSpecial,luaElseifThen,luaElse,luaThenEnd,luaIn
 
 " if ... then
-syn region luaIfThen transparent matchgroup=luaCond start="\<if\>" end="\<then\>"me=e-4           contains=ALLBUT,@luaDocComment,@luaLocal,luaTodo,luaSpecial,luaElseifThen,luaElse,luaIn nextgroup=luaThenEnd skipwhite skipempty
+syn region luaIfThen transparent matchgroup=luaCond start="\<if\>" end="\<then\>"me=e-4           contains=ALLBUT,emmyLua,@emmyLuaGroup,@luaLocal,luaTodo,luaSpecial,luaElseifThen,luaElse,luaIn nextgroup=luaThenEnd skipwhite skipempty
 
 " then ... end
-syn region luaThenEnd contained transparent matchgroup=luaCond start="\<then\>" end="\<end\>" contains=ALLBUT,@luaDocComment,@luaLocal,luaTodo,luaSpecial,luaThenEnd,luaIn
+syn region luaThenEnd contained transparent matchgroup=luaCond start="\<then\>" end="\<end\>" contains=ALLBUT,emmyLua,@emmyLuaGroup,@luaLocal,luaTodo,luaSpecial,luaThenEnd,luaIn
 
 " elseif ... then
-syn region luaElseifThen contained transparent matchgroup=luaCond start="\<elseif\>" end="\<then\>" contains=ALLBUT,@luaDocComment,@luaLocal,luaTodo,luaSpecial,luaElseifThen,luaElse,luaThenEnd,luaIn
+syn region luaElseifThen contained transparent matchgroup=luaCond start="\<elseif\>" end="\<then\>" contains=ALLBUT,emmyLua,@emmyLuaGroup,@luaLocal,luaTodo,luaSpecial,luaElseifThen,luaElse,luaThenEnd,luaIn
 
 " else
 syn keyword luaElse contained else
 
 " do ... end
-syn region luaBlock transparent matchgroup=luaStatement start="\<do\>" end="\<end\>"          contains=ALLBUT,@luaDocComment,luaTodo,luaSpecial,luaElseifThen,luaElse,luaThenEnd,luaIn
+syn region luaBlock transparent matchgroup=luaStatement start="\<do\>" end="\<end\>"          contains=ALLBUT,emmyLua,@emmyLuaGroup,luaTodo,luaSpecial,luaElseifThen,luaElse,luaThenEnd,luaIn
 
 " repeat ... until
-syn region luaLoopBlock transparent matchgroup=luaRepeat start="\<repeat\>" end="\<until\>"   contains=ALLBUT,@luaDocComment,@luaLocal,luaTodo,luaSpecial,luaElseifThen,luaElse,luaThenEnd,luaIn
+syn region luaLoopBlock transparent matchgroup=luaRepeat start="\<repeat\>" end="\<until\>"   contains=ALLBUT,emmyLua,@emmyLuaGroup,@luaLocal,luaTodo,luaSpecial,luaElseifThen,luaElse,luaThenEnd,luaIn
 
 " while ... do
-syn region luaLoopBlock transparent matchgroup=luaRepeat start="\<while\>" end="\<do\>"me=e-2 contains=ALLBUT,@luaDocComment,luaTodo,luaSpecial,luaIfThen,luaElseifThen,luaElse,luaThenEnd,luaIn nextgroup=luaBlock skipwhite skipempty
+syn region luaLoopBlock transparent matchgroup=luaRepeat start="\<while\>" end="\<do\>"me=e-2 contains=ALLBUT,emmyLua,@emmyLuaGroup,luaTodo,luaSpecial,luaIfThen,luaElseifThen,luaElse,luaThenEnd,luaIn nextgroup=luaBlock skipwhite skipempty
 
 " for ... do and for ... in ... do
-syn region luaLoopBlock transparent matchgroup=luaRepeat start="\<for\>" end="\<do\>"me=e-2   contains=ALLBUT,@luaDocComment,@luaLocal,luaTodo,luaSpecial,luaIfThen,luaElseifThen,luaElse,luaThenEnd nextgroup=luaBlock skipwhite skipempty
+syn region luaLoopBlock transparent matchgroup=luaRepeat start="\<for\>" end="\<do\>"me=e-2   contains=ALLBUT,emmyLua,@emmyLuaGroup,@luaLocal,luaTodo,luaSpecial,luaIfThen,luaElseifThen,luaElse,luaThenEnd nextgroup=luaBlock skipwhite skipempty
 
 syn keyword luaIn contained in
 
@@ -355,12 +419,14 @@ hi def link luaBraceError	Error
 hi def link luaSpecial		SpecialChar
 hi def link luaFunc		Identifier
 hi def link luaLabel		Label
-hi def link luaLocalAttrib      StorageClass
-hi def link luaDocAnnotation    Keyword
-hi def link luaDocName          Identifier
-hi def link luaDocType          Type
-hi def link luaSymbol           Operator
-
+hi def link emmyLuaComment      Comment
+hi def link emmyLuaAnnotation   Keyword
+hi def link emmyLuaAliasName    Identifier
+hi def link emmyLuaAliasType    Type
+hi def link emmyLuaTypeName     Type
+hi def link emmyLuaTypeSymbols  Operator
+hi def link emmyLuaVarName      Identifier
+hi def link emmyLuaBrackets     Structure
 
 let b:current_syntax = "lua"
 

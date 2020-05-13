@@ -1,11 +1,14 @@
 
 function BetterLua#GetColors()
 	if g:colors_name == "dracula"
-		hi! link luaSelf          DraculaPurpleItalic
-		hi! link luaDocAnnotation DraculaPink
-		hi! link luaDocName       DraculaOrangeItalic
-		hi! link luaDocType       DraculaCyanItalic
-		hi! link luaLocalAttrib   DraculaOrangeItalic
+		hi! link emmyLuaAnnotation   DraculaPink
+		hi! link emmyLuaAliasName    DraculaOrangeItalic
+		hi! link emmyLuaAliasType    DraculaCyanItalic
+		hi! link emmyLuaTypeName     DraculaCyanItalic
+		hi! link emmyLuaTypeSymbols  Operator
+		hi! link emmyLuaAliasName    DraculaOrangeItalic
+		hi! link emmyLuaVarName      DraculaOrangeItalic
+		hi! link emmyLuaBrackets     DraculaFg
 	endif
 endfunction
 

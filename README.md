@@ -49,14 +49,22 @@ to your vimrc
 	  but valid code. So for now, just don't make nil consts.
 - Function calls have a highlight group
 	- `luaFuncCall`
-- EmmyLua style comments have their own highlight groups
-	- `luaDocAnnotation`
-		- things like `@param`
-	- `luaDocName`
-		- variable names, the `foo` in `@param foo string`
-	- `luaDocType`
-		- type names, the `string` in `@param foo string`
+- EmmyLua style comments have their own highlight groups (all prefixed with
+  `emmyLua`)
+	- `emmyLuaAnnotation`
+		- The `@` directives like `@param`, `@type`
+	- `emmyLuaVarName`
+		- Variable names, the `foo` in `@param foo string`
+	- `emmyLuaTypeName`
+		- Type names, the `string` in `@param foo string`
 			- or `@type string` for var annotations
+	- `emmyLuaTypeSymbols`
+		- For `|` and `:` in type declarations
+	- `emmyLuaBrackets`
+		- For `<>[],` in type declarations like `@type table<number,
+		  string>`
+	- `emmyLuaAliasName`, `emmyLuaAliasType`
+		- `@alias foo bar`
 - Self, while not a keyword, has a highlight group
 	- `luaSelf`
 - Operator symbols are now highlighted
