@@ -47,6 +47,7 @@ syn match emmyLua "---.*" transparent contains=@emmyLuaGroup containedin=luaComm
 syn cluster emmyLuaGroup add=emmyLuaAnnotation
 syn cluster emmyLuaGroup add=emmyLuaTypeName
 syn cluster emmyLuaGroup add=emmyLuaTypeSymbols
+syn cluster emmyLuaGroup add=emmyLuaBrackets
 syn cluster emmyLuaGroup add=emmyLuaVarName
 syn cluster emmyLuaGroup add=emmyLuaAliasName
 syn cluster emmyLuaGroup add=emmyLuaAliasType
@@ -120,6 +121,8 @@ syn match emmyLuaTypeSymbols ":" containedin=emmyLuaTypeAndSuperTypes contained
 syn match emmyLuaTypeSymbols "|" containedin=emmyLuaTypes contained
 syn match emmyLuaBrackets ">" containedin=emmyLua contained
 syn match emmyLuaBrackets "<" containedin=emmyLua contained
+syn match emmyLuaBrackets "(" containedin=emmyLua contained
+syn match emmyLuaBrackets ")" containedin=emmyLua contained
 syn match emmyLuaBrackets "\[" containedin=emmyLua contained
 syn match emmyLuaBrackets "\]" containedin=emmyLua contained
 syn match emmyLuaBrackets "," containedin=emmyLua contained
@@ -419,6 +422,7 @@ hi def link luaBraceError	Error
 hi def link luaSpecial		SpecialChar
 hi def link luaFunc		Identifier
 hi def link luaLabel		Label
+hi def link luaSelf             Keyword
 hi def link emmyLuaComment      Comment
 hi def link emmyLuaAnnotation   Keyword
 hi def link emmyLuaAliasName    Identifier
