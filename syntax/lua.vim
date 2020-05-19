@@ -423,6 +423,7 @@ hi def link luaSpecial		SpecialChar
 hi def link luaFunc		Identifier
 hi def link luaLabel		Label
 hi def link luaSelf             Keyword
+hi def link luaLocalAttrib      Keyword
 hi def link emmyLuaComment      Comment
 hi def link emmyLuaAnnotation   Keyword
 hi def link emmyLuaAliasName    Identifier
