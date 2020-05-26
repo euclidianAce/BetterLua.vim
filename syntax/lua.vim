@@ -45,7 +45,7 @@ endif
 syn match luaVarargs "\V..."
 
 " EmmyLua Comments
-syn match emmyLua "---.*" transparent contains=@emmyLuaGroup containedin=luaComment
+syn match emmyLua "---\s*@.*" transparent contains=@emmyLuaGroup containedin=luaComment
 
 syn cluster emmyLuaGroup add=emmyLuaAnnotation
 syn cluster emmyLuaGroup add=emmyLuaTypeName
