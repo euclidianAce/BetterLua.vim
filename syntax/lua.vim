@@ -24,20 +24,23 @@ syn case match
 syn sync minlines=100
 
 " operators
-syn match luaSymbol "\V+"
-syn match luaSymbol "\V-"
-syn match luaSymbol "\V*"
-syn match luaSymbol "\V/"
-syn match luaSymbol "\V^"
-syn match luaSymbol "\V%"
-syn match luaSymbol "\V&"
-syn match luaSymbol "\V~"
-syn match luaSymbol "\V|"
-syn match luaSymbol "\V>"
-syn match luaSymbol "\V<"
-syn match luaSymbol "\V.."
-syn match luaSymbol "\V="
-syn match luaSymbol "\V#"
+syn match luaOperator "\V+"
+syn match luaOperator "\V-"
+syn match luaOperator "\V*"
+syn match luaOperator "\V/"
+syn match luaOperator "\V^"
+syn match luaOperator "\V%"
+syn match luaOperator "\V>"
+syn match luaOperator "\V<"
+syn match luaOperator "\V.."
+syn match luaOperator "\V="
+syn match luaOperator "\V#"
+
+if g:lua_subversion >= 3
+  syn match luaOperator "\V&"
+  syn match luaOperator "\V~"
+  syn match luaOperator "\V|"
+endif
 
 syn match luaVarargs "\V..."
 
