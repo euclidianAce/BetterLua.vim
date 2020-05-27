@@ -1,8 +1,3 @@
-" Vim syntax file
-" Language:	Lua 5.1, Lua 5.2, Lua 5.3, Lua 5.4
-" Maintainer:	Corey W <nerd1001001 'at' gmail.com>
-" First Author:	Carlos Augusto Teixeira Mendes <cmendes 'at' inf puc-rio br>
-" Last Change:	2020 May 8
 " Options:	lua_subversion = 1, 2, 3, or 4
 "               default: 3
 
