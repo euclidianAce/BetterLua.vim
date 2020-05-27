@@ -1,8 +1,3 @@
-" Vim syntax file
-" Language:	Lua 5.1, Lua 5.2, Lua 5.3, Lua 5.4
-" Maintainer:	Corey W <nerd1001001 'at' gmail.com>
-" First Author:	Carlos Augusto Teixeira Mendes <cmendes 'at' inf puc-rio br>
-" Last Change:	2020 May 8
 " Options:	lua_subversion = 1, 2, 3, or 4
 "               default: 3
 
@@ -23,7 +18,8 @@ syn case match
 " syncing method
 syn sync minlines=100
 
-" operators
+syn match luaVarargs "\V..."
+" {{{ Operators
 syn match luaOperator "\V+"
 syn match luaOperator "\V-"
 syn match luaOperator "\V*"
@@ -35,16 +31,15 @@ syn match luaOperator "\V<"
 syn match luaOperator "\V.."
 syn match luaOperator "\V="
 syn match luaOperator "\V#"
+syn keyword luaOperator and or not
 
 if g:lua_subversion >= 3
   syn match luaOperator "\V&"
   syn match luaOperator "\V~"
   syn match luaOperator "\V|"
 endif
-
-syn match luaVarargs "\V..."
-
-" EmmyLua Comments
+" }}}
+" {{{ EmmyLua Comments
 syn match emmyLua "---\s*@.*" transparent contains=@emmyLuaGroup containedin=luaComment
 
 syn cluster emmyLuaGroup add=emmyLuaAnnotation
@@ -129,17 +124,16 @@ syn match emmyLuaBrackets ")" containedin=emmyLua contained
 syn match emmyLuaBrackets "\[" containedin=emmyLua contained
 syn match emmyLuaBrackets "\]" containedin=emmyLua contained
 syn match emmyLuaBrackets "," containedin=emmyLua contained
-
-" Comments
+" }}}
+" {{{ Comments
 " First line may start with #!
 syn match   luaComment "\%^#!.*"
 syn region  luaComment start="--" end="$" contains=luaTodo,emmyLua,@Spell
 
 syn region  luaComment matchgroup=luaComment start="--\[\z(=*\)\[" end="\]\z1\]" contains=luaTodo,luaDoc,@Spell
 syn keyword luaTodo contained TODO FIXME XXX
-
-" Function call
-" needs to be defined before paren stuffs
+" }}}
+" {{{ Function call
 syn match luaFuncCall +\zs\(\k\w*\)\ze\s*\n*\s*(+
 syn match luaFuncCall +\zs\(\k\w*\)\ze\s*\n*\s*"+
 syn match luaFuncCall +\zs\(\k\w*\)\ze\s*\n*\s*'+
@@ -147,9 +141,8 @@ syn match luaFuncCall +\zs\(\k\w*\)\ze\s*\n*\s*{+
 syn match luaFuncCall +\zs\(\k\w*\)\ze\s*\n*\s*\[=*\[+
 " function calls can have any whitespace between the func name and args
 " including newlines
-
-syn keyword luaSelf self
-
+" }}}
+" {{{ Parens/delimiters
 " catch errors caused by wrong parenthesis and wrong curly brackets or
 " keywords placed outside their respective blocks
 syn region luaParen      transparent                     start='(' end=')' contains=ALLBUT,emmyLua,@emmyLuaGroup,@luaLocal,luaParenError,luaTodo,luaSpecial,luaIfThen,luaElseifThen,luaElse,luaThenEnd,luaBlock,luaLoopBlock,luaIn,luaStatement
@@ -158,37 +151,28 @@ syn region luaTableBlock transparent matchgroup=luaTable start="{" end="}" conta
 syn match  luaParenError ")"
 syn match  luaBraceError "}"
 syn match  luaError "\<\%(end\|else\|elseif\|then\|until\|in\)\>"
-
+" }}}
+" {{{ Blocks
 " function ... end
 syn region luaFunctionBlock transparent matchgroup=luaFunction start="\<function\>" end="\<end\>" contains=ALLBUT,emmyLua,@emmyLuaGroup,luaTodo,luaSpecial,luaElseifThen,luaElse,luaThenEnd,luaIn
-
 " if ... then
 syn region luaIfThen transparent matchgroup=luaCond start="\<if\>" end="\<then\>"me=e-4           contains=ALLBUT,emmyLua,@emmyLuaGroup,@luaLocal,luaTodo,luaSpecial,luaElseifThen,luaElse,luaIn nextgroup=luaThenEnd skipwhite skipempty
-
 " then ... end
 syn region luaThenEnd contained transparent matchgroup=luaCond start="\<then\>" end="\<end\>" contains=ALLBUT,emmyLua,@emmyLuaGroup,@luaLocal,luaTodo,luaSpecial,luaThenEnd,luaIn
-
 " elseif ... then
 syn region luaElseifThen contained transparent matchgroup=luaCond start="\<elseif\>" end="\<then\>" contains=ALLBUT,emmyLua,@emmyLuaGroup,@luaLocal,luaTodo,luaSpecial,luaElseifThen,luaElse,luaThenEnd,luaIn
-
 " else
 syn keyword luaElse contained else
-
 " do ... end
 syn region luaBlock transparent matchgroup=luaStatement start="\<do\>" end="\<end\>"          contains=ALLBUT,emmyLua,@emmyLuaGroup,luaTodo,luaSpecial,luaElseifThen,luaElse,luaThenEnd,luaIn
-
 " repeat ... until
 syn region luaLoopBlock transparent matchgroup=luaRepeat start="\<repeat\>" end="\<until\>"   contains=ALLBUT,emmyLua,@emmyLuaGroup,@luaLocal,luaTodo,luaSpecial,luaElseifThen,luaElse,luaThenEnd,luaIn
-
 " while ... do
 syn region luaLoopBlock transparent matchgroup=luaRepeat start="\<while\>" end="\<do\>"me=e-2 contains=ALLBUT,emmyLua,@emmyLuaGroup,luaTodo,luaSpecial,luaIfThen,luaElseifThen,luaElse,luaThenEnd,luaIn nextgroup=luaBlock skipwhite skipempty
-
 " for ... do and for ... in ... do
 syn region luaLoopBlock transparent matchgroup=luaRepeat start="\<for\>" end="\<do\>"me=e-2   contains=ALLBUT,emmyLua,@emmyLuaGroup,@luaLocal,luaTodo,luaSpecial,luaIfThen,luaElseifThen,luaElse,luaThenEnd nextgroup=luaBlock skipwhite skipempty
-
-syn keyword luaIn contained in
-
-" Strings
+" }}}
+" {{{ Strings
 if lua_subversion == 1
   syn match  luaSpecial contained #\\[\\abfnrtv'"]\|\\[[:digit:]]\{,3}#
 else " >=Lua 5.2
@@ -197,7 +181,8 @@ endif
 syn region luaString2 matchgroup=luaString start="\[\z(=*\)\[" end="\]\z1\]" contains=@Spell
 syn region luaString  start=+'+ end=+'+ skip=+\\\\\|\\'+ contains=luaSpecial,@Spell
 syn region luaString  start=+"+ end=+"+ skip=+\\\\\|\\"+ contains=luaSpecial,@Spell
-
+" }}}
+" {{{ 5.4 <const>
 if lua_subversion >= 4
   " local ... <attrib>
   syn match luaLocalAttrib "<\zs\w\+\ze>" containedin=luaLocalAttribTag
@@ -205,17 +190,19 @@ if lua_subversion >= 4
   syn region luaLocalDec transparent start="\<local\>" end="\<=\>" contains=NONE
   syn cluster luaLocal contains=luaLocalDec,luaLocalAttribTag,luaLocalAttrib
 endif
-
-" other keywords
+" }}}
+" {{{ Other Keywords
+syn keyword luaSelf self
+syn keyword luaIn contained in
 syn keyword luaStatement return local break
-syn keyword luaOperator and or not
 syn keyword luaConstant nil
 syn keyword luaConstant true false
 if lua_subversion >= 2
   syn keyword luaStatement goto
   syn match luaLabel "::\I\i*::"
 endif
-
+" }}}
+" {{{ Numbers
 " integer number
 syn match luaNumber "\<\d\+\>"
 " floating point number, with dot, optional exponent
@@ -231,7 +218,8 @@ if lua_subversion == 1
 elseif lua_subversion >= 2
   syn match luaNumber "\<0[xX][[:xdigit:].]\+\%([pP][-+]\=\d\+\)\=\>"
 endif
-
+" }}}
+" {{{ Built-ins
 syn keyword luaFunc assert collectgarbage dofile error next
 syn keyword luaFunc print rawget rawset tonumber tostring type _VERSION
 syn keyword luaFunc getmetatable setmetatable
@@ -399,10 +387,8 @@ if lua_subversion > 2
   syn match luaFunc /\<utf8\.len\>/
   syn match luaFunc /\<utf8\.offset\>/
 end
-
-" Define the default highlighting.
-" Only when an item doesn't have highlighting yet
-
+" }}}
+" {{{ Highlighting
 hi def link luaStatement	Statement
 hi def link luaRepeat		Repeat
 hi def link luaFor		Repeat
@@ -435,6 +421,7 @@ hi def link emmyLuaTypeName     Type
 hi def link emmyLuaTypeSymbols  Operator
 hi def link emmyLuaVarName      Identifier
 hi def link emmyLuaBrackets     Structure
+" }}}
 
 let b:current_syntax = "lua"
 
