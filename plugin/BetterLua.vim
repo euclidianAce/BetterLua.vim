@@ -9,6 +9,7 @@ function BetterLua#GetColors()
 		hi! link emmyLuaAliasName    DraculaOrangeItalic
 		hi! link emmyLuaVarName      DraculaOrangeItalic
 		hi! link emmyLuaBrackets     DraculaFg
+		hi! link luaLocalAttrib      DraculaOrangeItalic
 		hi! link luaSelf             DraculaPurple
 	endif
 endfunction
