@@ -1,5 +1,5 @@
 
-function BetterLua#GetColors()
+function BetterLua#GetLuaColors()
 	if g:colors_name == "dracula"
 		hi! link emmyLuaAnnotation   DraculaPink
 		hi! link emmyLuaAliasName    DraculaOrangeItalic
@@ -13,4 +13,12 @@ function BetterLua#GetColors()
 	endif
 endfunction
 
-autocmd FileType lua call BetterLua#GetColors()
+function BetterLua#GetTealColors()
+	if g:colors_name == "dracula"
+		hi! link tealTable           DraculaFg
+		hi! link tealFunctionArgName DraculaOrange
+		hi! link tealSelf            DraculaPurple
+	endif
+endfunction
+autocmd FileType lua call BetterLua#GetLuaColors()
+autocmd FileType teal call BetterLua#GetTealColors()

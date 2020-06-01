@@ -1,4 +1,6 @@
 
+syn case match
+syn sync minlines=100
 
 syn cluster tealBase contains=
 	\ tealComment,tealLongComment,
@@ -7,11 +9,12 @@ syn cluster tealBase contains=
 syn cluster tealExpression contains=
 	\ @tealBase,tealParen,tealBracket,tealBrace,
 	\ tealOperator,tealFunctionBlock,tealFunctionCall,tealError,
-	\ tealTableConstructor,tealRecordBlock,tealEnumBlock
+	\ tealTableConstructor,tealRecordBlock,tealEnumBlock,tealSelf
 syn cluster tealStatement contains=
 	\ @tealExpression,tealIfThen,tealBlock,tealLoop,
 	\ tealRepeatBlock,tealWhileDo,tealForDo,
-	\ tealGoto,tealLabel
+	\ tealGoto,tealLabel,tealBreak,tealReturn,
+	\ tealLocal,tealGlobal
 
 " {{{ Types
 syn match tealUnion /|/ contained
@@ -20,12 +23,11 @@ syn match tealUnion /|/ contained
 syn match tealBasicType /\K\k*\(\.\K\k*\)*/ contained
 	\ nextgroup=tealUnion
 	\ skipwhite skipempty
-hi! link tealBasicType Type
 syn match tealFunctionType /\<function\>/ contained
 	\ nextgroup=tealFunctionTypeArgs,tealUnion
 	\ skipwhite skipempty
 syn region tealFunctionTypeArgs contained transparent
-	\ matchgroup=Error
+	\ matchgroup=tealParen
 	\ start=/(/ end=/)/
 	\ contains=@tealSingleType
 	\ nextgroup=tealParenTypesAnnotation
@@ -33,7 +35,6 @@ syn region tealFunctionTypeArgs contained transparent
 syn match tealParenTypesAnnotation /:/ contained
 	\ nextgroup=tealParenTypes
 	\ skipwhite skipempty
-hi! def link tealParenTypesAnnotation DraculaGreenItalic
 syn region tealParenTypes contained transparent
 	\ matchgroup=tealParen
 	\ start=/(/ end=/)/
@@ -51,16 +52,22 @@ syn cluster tealSingleType contains=
 	\ tealParenTypesAnnotation,
 	\ tealParenTypes,
 	\ tealTableType
-hi! def link tealParens DraculaYellowItalic
+" }}}
+" {{{ Operators
+" Symbols
+syn match tealOperator "[#<>=~^&|*/%+-]\|\.\."
+" Words
+syn keyword tealOperator and or not
+syn keyword tealOperator is as
+	\ nextgroup=@tealSingleType
+	\ skipempty skipnl skipwhite
 " }}}
 " {{{ Comments
-syn match tealComment "\%^#!"
+syn match tealComment "\%^#!.*$"
 syn match tealComment /--.*$/ contains=tealTodo,@Spell
 syn keyword tealComment contained TODO FIXME XXX
 syn region tealLongComment start=/--\[\z(=*\)\[/ end=/\]\z1\]/
 
-hi def link tealComment Comment
-hi def link tealLongComment Comment
 " }}}
 " {{{ function ... end
 syn region tealFunctionBlock
@@ -98,10 +105,6 @@ syn match tealFunctionReturnTypeAnnotation /:/ contained
 " TODO: support functions with multiple returns without using parens
 
 
-hi! link tealFunctionReturnTypeAnnotation DraculaPinkItalic
-hi! link tealFunctionName DraculaGreen
-hi! link tealFunctionArgName DraculaOrange
-hi! link tealFunctionArgTypeAnnotation DraculaRed
 
 " }}}
 " {{{ record ... end
@@ -112,20 +115,18 @@ syn region tealRecordBlock
 syn match tealRecordItem /\K\k\*/ contained
 	\ nextgroup=tealRecordTypeAnnotation,tealRecordAssign
 	\ skipwhite skipnl skipempty
-syn match tealRecordTypeAnnotation /:/
+syn match tealRecordTypeAnnotation /:/ contained
 	\ nextgroup=@tealSingleType
 	\ skipwhite skipnl skipempty
 syn match tealRecordAssign /=/ contained
 	\ nextgroup=tealRecordBlock
 	\ skipwhite skipnl skipempty
-hi! link tealRecord DraculaGreen
 " }}}
 " {{{ enum ... end
 syn region tealEnumBlock
 	\ matchgroup=tealEnum transparent
 	\ start="\<enum\>" end="\<end\>"
 	\ contains=tealString
-hi! link tealEnum DraculaYellowItalic
 " }}}
 " {{{ if ... then, elseif ... then, then ... end, else
 syn region tealIfThen
@@ -141,8 +142,6 @@ syn region tealThenEnd
 	\ start=/\<then\>/ end=/\<end\>/
 	\ contains=@tealStatement,tealElseifThen,tealElse
 syn keyword tealElse else contained
-hi! link tealIfStatement DraculaRed
-hi! link tealElse tealIfStatement
 " }}}
 " {{{ for ... do ... end, in
 syn region tealForDo
@@ -150,35 +149,32 @@ syn region tealForDo
 	\ contains=tealIn,@tealExpression
 	\ start=/\<for\>/ end=/\<do\>/me=e-2
 syn keyword tealIn in contained
-hi! link tealFor DraculaPurpleItalic
 " }}}
 " {{{ while ... do ... end
 syn region tealWhileDo
 	\ matchgroup=tealWhile transparent
 	\ contains=@tealExpression
 	\ start=/\<while\>/ end=/\<do\>/me=e-2
-hi! link tealWhile DraculaOrange
 " }}}
 " {{{ do ... end
 syn region tealBlock
 	\ matchgroup=tealDoEnd transparent
 	\ contains=@tealStatement
 	\ start=/\<do\>/ end=/\<end\>/
-hi! link tealDoEnd DraculaPurpleItalic
 " }}}
 " {{{ repeat ... until
 syn region tealRepeatBlock
 	\ matchgroup=tealRepeatUntil transparent
 	\ contains=@tealStatement
 	\ start=/\<repeat\>/ end=/\<until\>/
-hi! link tealRepeatUntil DraculaYellow
 " }}}
-" {{{ local .../global ...
+" {{{ local, global, break, return, self
 syn keyword tealLocal local
 syn keyword tealGlobal global
+syn keyword tealBreak break
+syn keyword tealReturn return
+syn keyword tealSelf self
 
-hi! link tealLocal Keyword
-hi! link tealGlobal Keyword
 " }}}
 " {{{ Parens
 syn region tealParen transparent
@@ -195,26 +191,24 @@ syn region tealTableConstructor
 	\ matchgroup=tealTable
 	\ start=/{/ end=/}/
 	\ contains=@tealExpression
-hi! link tealTable DraculaGreen
 
 " }}}
 " {{{ Function call
+syn match tealFunctionCall /\K\k*\("\|'\|(\|{\|\[=*\[\)\@=/
 " }}}
 " {{{ Goto
-" }}}
-" {{{ Operators
+syn keyword tealGoto goto
+syn match tealLabel /::\K\k*::/
+
 " }}}
 " {{{ true, false, nil, etc...
 syn keyword tealConstant nil true false
-hi def link tealConstant Constant
 " }}}
 " {{{ Strings
 syn match tealSpecial contained #\\[\\abfnrtvz'"]\|\\x[[:xdigit:]]\{2}\|\\[[:digit:]]\{,3}#
-syn region tealLongString matchgroup=luaString start="\[\z(=*\)\[" end="\]\z1\]" contains=@Spell
+syn region tealLongString matchgroup=tealString start="\[\z(=*\)\[" end="\]\z1\]" contains=@Spell
 syn region tealString  start=+'+ end=+'+ skip=+\\\\\|\\'+ contains=luaSpecial,@Spell
 syn region tealString  start=+"+ end=+"+ skip=+\\\\\|\\"+ contains=luaSpecial,@Spell
-hi! def link tealString DraculaYellow
-hi! def link tealLongString DraculaYellow
 " }}}
 " {{{ Numbers
 " integer number
@@ -227,12 +221,155 @@ syn match tealNumber  "\.\d\+\%([eE][-+]\=\d\+\)\=\>"
 syn match tealNumber  "\<\d\+[eE][-+]\=\d\+\>"
 " hex numbers
 syn match tealNumber "\<0[xX][[:xdigit:].]\+\%([pP][-+]\=\d\+\)\=\>"
-hi def link tealNumber Number
 " }}}
-" {{{ TODO: Built ins
+" {{{ Built ins
+
+syn keyword luaBuiltIn assert error collectgarbage
+	\ print tonumber tostring type
+	\ getmetatable setmetatable
+	\ ipairs pairs next
+	\ pcall xpcall
+	\ _G _ENV _VERSION require
+	\ rawequal rawget rawset rawlen
+	\ loadfile load dofile select
+	\ /\<package\.cpath\>/
+	\ /\<package\.loaded\>/
+	\ /\<package\.loadlib\>/
+	\ /\<package\.path\>/
+	\ /\<coroutine\.running\>/
+	\ /\<coroutine\.create\>/
+	\ /\<coroutine\.resume\>/
+	\ /\<coroutine\.status\>/
+	\ /\<coroutine\.wrap\>/
+	\ /\<coroutine\.yield\>/
+	\ /\<string\.byte\>/
+	\ /\<string\.char\>/
+	\ /\<string\.dump\>/
+	\ /\<string\.find\>/
+	\ /\<string\.format\>/
+	\ /\<string\.gsub\>/
+	\ /\<string\.len\>/
+	\ /\<string\.lower\>/
+	\ /\<string\.rep\>/
+	\ /\<string\.sub\>/
+	\ /\<string\.upper\>/
+	\ /\<string\.gmatch\>/
+	\ /\<string\.match\>/
+	\ /\<string\.reverse\>/
+	\ /\<table\.pack\>/
+	\ /\<table\.unpack\>/
+	\ /\<table\.concat\>/
+	\ /\<table\.sort\>/
+	\ /\<table\.insert\>/
+	\ /\<table\.remove\>/
+	\ /\<math\.abs\>/
+	\ /\<math\.acos\>/
+	\ /\<math\.asin\>/
+	\ /\<math\.atan\>/
+	\ /\<math\.atan2\>/
+	\ /\<math\.ceil\>/
+	\ /\<math\.sin\>/
+	\ /\<math\.cos\>/
+	\ /\<math\.tan\>/
+	\ /\<math\.deg\>/
+	\ /\<math\.exp\>/
+	\ /\<math\.floor\>/
+	\ /\<math\.log\>/
+	\ /\<math\.max\>/
+	\ /\<math\.min\>/
+	\ /\<math\.huge\>/
+	\ /\<math\.fmod\>/
+	\ /\<math\.modf\>/
+	\ /\<math\.ult\>/
+	\ /\<math\.tointeger\>/
+	\ /\<math\.maxinteger\>/
+	\ /\<math\.mininteger\>/
+	\ /\<math\.pow\>/
+	\ /\<math\.rad\>/
+	\ /\<math\.sqrt\>/
+	\ /\<math\.random\>/
+	\ /\<math\.randomseed\>/
+	\ /\<math\.pi\>/
+	\ /\<io\.close\>/
+	\ /\<io\.flush\>/
+	\ /\<io\.input\>/
+	\ /\<io\.lines\>/
+	\ /\<io\.open\>/
+	\ /\<io\.output\>/
+	\ /\<io\.popen\>/
+	\ /\<io\.read\>/
+	\ /\<io\.stderr\>/
+	\ /\<io\.stdin\>/
+	\ /\<io\.stdout\>/
+	\ /\<io\.tmpfile\>/
+	\ /\<io\.type\>/
+	\ /\<io\.write\>/
+	\ /\<os\.clock\>/
+	\ /\<os\.date\>/
+	\ /\<os\.difftime\>/
+	\ /\<os\.execute\>/
+	\ /\<os\.exit\>/
+	\ /\<os\.getenv\>/
+	\ /\<os\.remove\>/
+	\ /\<os\.rename\>/
+	\ /\<os\.setlocale\>/
+	\ /\<os\.time\>/
+	\ /\<os\.tmpname\>/
+	\ /\<debug\.debug\>/
+	\ /\<debug\.gethook\>/
+	\ /\<debug\.getinfo\>/
+	\ /\<debug\.getlocal\>/
+	\ /\<debug\.getupvalue\>/
+	\ /\<debug\.setlocal\>/
+	\ /\<debug\.setupvalue\>/
+	\ /\<debug\.sethook\>/
+	\ /\<debug\.traceback\>/
+	\ /\<debug\.getmetatable\>/
+	\ /\<debug\.setmetatable\>/
+	\ /\<debug\.getregistry\>/
+	\ /\<debug\.getuservalue\>/
+	\ /\<debug\.setuservalue\>/
+	\ /\<debug\.upvalueid\>/
+	\ /\<debug\.upvaluejoin\>/
+	\ /\<utf8\.char\>/
+	\ /\<utf8\.charpattern\>/
+	\ /\<utf8\.codepoint\>/
+	\ /\<utf8\.codes\>/
+	\ /\<utf8\.len\>/
+	\ /\<utf8\.offset\>/
 
 " }}}
-
 " {{{ Highlight
-hi def link tealKeyword Keyword
+hi def link tealKeyword                      Keyword
+hi def link tealFunctionName                 Function
+" hi def link tealFunctionArgName              DraculaOrange
+hi def link tealFunctionArgName              Identifier
+hi def link tealLocal                        Keyword
+hi def link tealGlobal                       Keyword
+hi def link tealBreak                        Keyword
+hi def link tealReturn                       Keyword
+hi def link tealSelf                         Special
+" hi def link tealTable                        DraculaGreen
+hi def link tealTable                        Structure
+hi def link tealBasicType                    Type
+hi def link tealFunctionType                 Type
+" hi def link tealParens                       
+hi def link tealRecord                       Keyword
+hi def link tealEnum                         Keyword
+hi def link tealIfStatement                  Conditional
+hi def link tealElse                         Conditional
+hi def link tealFor                          Repeat
+hi def link tealWhile                        Repeat
+hi def link tealDoEnd                        Keyword
+hi def link tealRepeatUntil                  Repeat
+hi def link tealFunctionCall                 Function
+hi def link tealGoto                         Keyword
+hi def link tealLabel                        Label
+hi def link tealString                       String
+hi def link tealLongString                   String
+hi def link tealComment                      Comment
+hi def link tealLongComment                  Comment
+hi def link tealConstant                     Constant
+hi def link tealNumber                       Number
+hi def link tealOperator                     Operator
 " }}}
