@@ -19,34 +19,34 @@ syn cluster tealStatement contains=
 " {{{ Types
 syn match tealTypeComma /,/ contained
 	\ nextgroup=@tealType
-	\ skipwhite skipempty
+	\ skipwhite skipempty skipnl
 syn match tealUnion /|/ contained
 	\ nextgroup=@tealType
-	\ skipwhite skipempty
+	\ skipwhite skipempty skipnl
 syn match tealBasicType /\K\k*\(\.\K\k*\)*/ contained
 	\ nextgroup=tealUnion,tealTypeComma
-	\ skipwhite skipempty
+	\ skipwhite skipempty skipnl
 syn match tealFunctionType /\<function\>/ contained
 	\ nextgroup=tealFunctionTypeArgs,tealUnion,tealTypeComma
-	\ skipwhite skipempty
+	\ skipwhite skipempty skipnl
 syn region tealFunctionTypeArgs contained transparent
 	\ matchgroup=tealParen
 	\ start=/(/ end=/)/
 	\ contains=@tealType
 	\ nextgroup=tealParenTypesAnnotation
-	\ skipwhite skipempty
+	\ skipwhite skipempty skipnl
 syn match tealParenTypesAnnotation /:/ contained
 	\ nextgroup=@tealType,tealParenTypes
-	\ skipwhite skipempty
+	\ skipwhite skipempty skipnl
 syn region tealParenTypes contained transparent
 	\ matchgroup=tealParen
 	\ start=/(/ end=/)/
 	\ contains=@tealType
 	\ nextgroup=tealUnion,tealTypeComma
-	\ skipwhite skipempty
+	\ skipwhite skipempty skipnl
 syn region tealTableType start=/{/ end=/}/ contained
 	\ nextgroup=tealUnion,tealTypeComma
-	\ skipwhite skipempty
+	\ skipwhite skipempty skipnl
 	\ contains=@tealType
 syn cluster tealType contains=
 	\ tealBasicType,
@@ -183,9 +183,26 @@ syn region tealRepeatBlock
 	\ contains=@tealStatement
 	\ start=/\<repeat\>/ end=/\<until\>/
 " }}}
-" {{{ local, global, break, return, self
+" {{{ local ... <const>, global ... <const>, break, return, self
+syn region tealAttributeBrackets contained transparent
+	\ matchgroup=tealParens
+	\ start=/</ end=/>/
+	\ contains=tealAttribute
+	\ nextgroup=tealVarComma,tealTypeAnnotation
+	\ skipwhite skipempty skipnl
+syn match tealAttribute contained /\K\k*/
+syn match tealVarName contained /\K\k*/
+	\ nextgroup=tealAttributeBrackets,tealVarComma,tealTypeAnnotation
+	\ skipwhite skipempty skipnl
+syn match tealVarComma /,/ contained
+	\ nextgroup=tealVarName
+	\ skipwhite skipempty skipnl
 syn keyword tealLocal local
+	\ nextgroup=tealVarName
+	\ skipwhite skipempty skipnl
 syn keyword tealGlobal global
+	\ nextgroup=tealVarName
+	\ skipwhite skipempty skipnl
 syn keyword tealBreak break
 syn keyword tealReturn return
 syn keyword tealSelf self
@@ -370,6 +387,7 @@ hi def link tealTable                        Structure
 hi def link tealBasicType                    Type
 hi def link tealFunctionType                 Type
 hi def link tealNominalFuncType              Keyword
+hi def link tealAttribute                    StorageClass
 " hi def link tealParens                       
 hi def link tealRecord                       Keyword
 hi def link tealEnum                         Keyword

@@ -18,6 +18,8 @@ function BetterLua#GetTealColors()
 		hi! link tealTable           DraculaFg
 		hi! link tealFunctionArgName DraculaOrange
 		hi! link tealSelf            DraculaPurple
+		hi! link tealBuiltin         DraculaCyan
+		hi! link tealAttribute       DraculaOrangeItalic
 	endif
 endfunction
 autocmd FileType lua call BetterLua#GetLuaColors()
