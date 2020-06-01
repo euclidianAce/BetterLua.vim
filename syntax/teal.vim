@@ -11,47 +11,53 @@ syn cluster tealExpression contains=
 	\ tealOperator,tealFunctionBlock,tealFunctionCall,tealError,
 	\ tealTableConstructor,tealRecordBlock,tealEnumBlock,tealSelf
 syn cluster tealStatement contains=
-	\ @tealExpression,tealIfThen,tealBlock,tealLoop,
+	\ @tealExpression,tealIfThen,tealThenEnd,tealBlock,tealLoop,
 	\ tealRepeatBlock,tealWhileDo,tealForDo,
 	\ tealGoto,tealLabel,tealBreak,tealReturn,
-	\ tealLocal,tealGlobal
+	\ tealLocal,tealGlobal,tealTypeAnnotation
 
 " {{{ Types
+syn match tealTypeComma /,/ contained
+	\ nextgroup=@tealType
+	\ skipwhite skipempty
 syn match tealUnion /|/ contained
-	\ nextgroup=@tealSingleType
+	\ nextgroup=@tealType
 	\ skipwhite skipempty
 syn match tealBasicType /\K\k*\(\.\K\k*\)*/ contained
-	\ nextgroup=tealUnion
+	\ nextgroup=tealUnion,tealTypeComma
 	\ skipwhite skipempty
 syn match tealFunctionType /\<function\>/ contained
-	\ nextgroup=tealFunctionTypeArgs,tealUnion
+	\ nextgroup=tealFunctionTypeArgs,tealUnion,tealTypeComma
 	\ skipwhite skipempty
 syn region tealFunctionTypeArgs contained transparent
 	\ matchgroup=tealParen
 	\ start=/(/ end=/)/
-	\ contains=@tealSingleType
+	\ contains=@tealType
 	\ nextgroup=tealParenTypesAnnotation
 	\ skipwhite skipempty
 syn match tealParenTypesAnnotation /:/ contained
-	\ nextgroup=tealParenTypes
+	\ nextgroup=@tealType,tealParenTypes
 	\ skipwhite skipempty
 syn region tealParenTypes contained transparent
 	\ matchgroup=tealParen
 	\ start=/(/ end=/)/
-	\ contains=@tealSingleType
-	\ nextgroup=tealUnion
+	\ contains=@tealType
+	\ nextgroup=tealUnion,tealTypeComma
 	\ skipwhite skipempty
 syn region tealTableType start=/{/ end=/}/ contained
-	\ nextgroup=tealUnion
+	\ nextgroup=tealUnion,tealTypeComma
 	\ skipwhite skipempty
-	\ contains=@tealSingleType
-syn cluster tealSingleType contains=
+	\ contains=@tealType
+syn cluster tealType contains=
 	\ tealBasicType,
 	\ tealFunctionType,
 	\ tealFunctionTypeArgs,
 	\ tealParenTypesAnnotation,
 	\ tealParenTypes,
 	\ tealTableType
+syn match tealTypeAnnotation /:/
+	\ nextgroup=@tealType
+	\ skipwhite skipempty skipnl
 " }}}
 " {{{ Operators
 " Symbols
@@ -59,7 +65,7 @@ syn match tealOperator "[#<>=~^&|*/%+-]\|\.\."
 " Words
 syn keyword tealOperator and or not
 syn keyword tealOperator is as
-	\ nextgroup=@tealSingleType
+	\ nextgroup=@tealType
 	\ skipempty skipnl skipwhite
 " }}}
 " {{{ Comments
@@ -68,6 +74,16 @@ syn match tealComment /--.*$/ contains=tealTodo,@Spell
 syn keyword tealComment contained TODO FIXME XXX
 syn region tealLongComment start=/--\[\z(=*\)\[/ end=/\]\z1\]/
 
+" }}}
+" {{{ functiontype
+syn keyword tealNominalFuncType functiontype
+	\ nextgroup=tealNominalFuncGeneric,tealFunctionTypeArgs
+	\ skipempty skipnl skipwhite
+syn region tealNominalFuncGeneric contained transparent
+	\ start=/</ end=/>/
+	\ contains=tealBasicType
+	\ nextgroup=tealFunctionTypeArgs
+	\ skipwhite skipempty skipnl
 " }}}
 " {{{ function ... end
 syn region tealFunctionBlock
@@ -87,19 +103,18 @@ syn region tealFunctionArgs contained transparent
 	\ matchgroup=tealParens
 	\ start=/(/ end=/)/
 	\ contains=@tealBase,tealFunctionArgName,
-	\ tealFunctionArgTypeAnnotation,@tealSingleType
+	\ tealFunctionArgTypeAnnotation,@tealType
 	\ nextgroup=tealFunctionReturnTypeAnnotation
 syn match tealFunctionArgName contained /\K\k*/
 	\ nextgroup=tealFunctionArgTypeAnnotation,tealFunctionArgComma
 	\ skipwhite skipempty skipnl
-syn match tealFunctionArgTypeAnnotation contained /:/
-	\ nextgroup=@tealSingleType
-	\ skipwhite skipempty skipnl
-syn match tealFunctionArgComma contained /,/
+syn region tealFunctionArgTypeAnnotation contained transparent
+	\ start=/:/ end=/\(,\|)\)\@=/
+	\ contains=@tealType
 	\ nextgroup=tealFunctionArgName
 	\ skipwhite skipempty skipnl
 syn match tealFunctionReturnTypeAnnotation /:/ contained
-	\ nextgroup=@tealSingleType
+	\ nextgroup=@tealType
 	\ skipwhite skipempty skipnl
 
 " TODO: support functions with multiple returns without using parens
@@ -116,7 +131,7 @@ syn match tealRecordItem /\K\k\*/ contained
 	\ nextgroup=tealRecordTypeAnnotation,tealRecordAssign
 	\ skipwhite skipnl skipempty
 syn match tealRecordTypeAnnotation /:/ contained
-	\ nextgroup=@tealSingleType
+	\ nextgroup=@tealType
 	\ skipwhite skipnl skipempty
 syn match tealRecordAssign /=/ contained
 	\ nextgroup=tealRecordBlock
@@ -224,7 +239,7 @@ syn match tealNumber "\<0[xX][[:xdigit:].]\+\%([pP][-+]\=\d\+\)\=\>"
 " }}}
 " {{{ Built ins
 
-syn keyword luaBuiltIn assert error collectgarbage
+syn keyword tealBuiltIn assert error collectgarbage
 	\ print tonumber tostring type
 	\ getmetatable setmetatable
 	\ ipairs pairs next
@@ -232,111 +247,111 @@ syn keyword luaBuiltIn assert error collectgarbage
 	\ _G _ENV _VERSION require
 	\ rawequal rawget rawset rawlen
 	\ loadfile load dofile select
-	\ /\<package\.cpath\>/
-	\ /\<package\.loaded\>/
-	\ /\<package\.loadlib\>/
-	\ /\<package\.path\>/
-	\ /\<coroutine\.running\>/
-	\ /\<coroutine\.create\>/
-	\ /\<coroutine\.resume\>/
-	\ /\<coroutine\.status\>/
-	\ /\<coroutine\.wrap\>/
-	\ /\<coroutine\.yield\>/
-	\ /\<string\.byte\>/
-	\ /\<string\.char\>/
-	\ /\<string\.dump\>/
-	\ /\<string\.find\>/
-	\ /\<string\.format\>/
-	\ /\<string\.gsub\>/
-	\ /\<string\.len\>/
-	\ /\<string\.lower\>/
-	\ /\<string\.rep\>/
-	\ /\<string\.sub\>/
-	\ /\<string\.upper\>/
-	\ /\<string\.gmatch\>/
-	\ /\<string\.match\>/
-	\ /\<string\.reverse\>/
-	\ /\<table\.pack\>/
-	\ /\<table\.unpack\>/
-	\ /\<table\.concat\>/
-	\ /\<table\.sort\>/
-	\ /\<table\.insert\>/
-	\ /\<table\.remove\>/
-	\ /\<math\.abs\>/
-	\ /\<math\.acos\>/
-	\ /\<math\.asin\>/
-	\ /\<math\.atan\>/
-	\ /\<math\.atan2\>/
-	\ /\<math\.ceil\>/
-	\ /\<math\.sin\>/
-	\ /\<math\.cos\>/
-	\ /\<math\.tan\>/
-	\ /\<math\.deg\>/
-	\ /\<math\.exp\>/
-	\ /\<math\.floor\>/
-	\ /\<math\.log\>/
-	\ /\<math\.max\>/
-	\ /\<math\.min\>/
-	\ /\<math\.huge\>/
-	\ /\<math\.fmod\>/
-	\ /\<math\.modf\>/
-	\ /\<math\.ult\>/
-	\ /\<math\.tointeger\>/
-	\ /\<math\.maxinteger\>/
-	\ /\<math\.mininteger\>/
-	\ /\<math\.pow\>/
-	\ /\<math\.rad\>/
-	\ /\<math\.sqrt\>/
-	\ /\<math\.random\>/
-	\ /\<math\.randomseed\>/
-	\ /\<math\.pi\>/
-	\ /\<io\.close\>/
-	\ /\<io\.flush\>/
-	\ /\<io\.input\>/
-	\ /\<io\.lines\>/
-	\ /\<io\.open\>/
-	\ /\<io\.output\>/
-	\ /\<io\.popen\>/
-	\ /\<io\.read\>/
-	\ /\<io\.stderr\>/
-	\ /\<io\.stdin\>/
-	\ /\<io\.stdout\>/
-	\ /\<io\.tmpfile\>/
-	\ /\<io\.type\>/
-	\ /\<io\.write\>/
-	\ /\<os\.clock\>/
-	\ /\<os\.date\>/
-	\ /\<os\.difftime\>/
-	\ /\<os\.execute\>/
-	\ /\<os\.exit\>/
-	\ /\<os\.getenv\>/
-	\ /\<os\.remove\>/
-	\ /\<os\.rename\>/
-	\ /\<os\.setlocale\>/
-	\ /\<os\.time\>/
-	\ /\<os\.tmpname\>/
-	\ /\<debug\.debug\>/
-	\ /\<debug\.gethook\>/
-	\ /\<debug\.getinfo\>/
-	\ /\<debug\.getlocal\>/
-	\ /\<debug\.getupvalue\>/
-	\ /\<debug\.setlocal\>/
-	\ /\<debug\.setupvalue\>/
-	\ /\<debug\.sethook\>/
-	\ /\<debug\.traceback\>/
-	\ /\<debug\.getmetatable\>/
-	\ /\<debug\.setmetatable\>/
-	\ /\<debug\.getregistry\>/
-	\ /\<debug\.getuservalue\>/
-	\ /\<debug\.setuservalue\>/
-	\ /\<debug\.upvalueid\>/
-	\ /\<debug\.upvaluejoin\>/
-	\ /\<utf8\.char\>/
-	\ /\<utf8\.charpattern\>/
-	\ /\<utf8\.codepoint\>/
-	\ /\<utf8\.codes\>/
-	\ /\<utf8\.len\>/
-	\ /\<utf8\.offset\>/
+syn match tealBuiltIn /\<package\.cpath\>/
+syn match tealBuiltIn /\<package\.loaded\>/
+syn match tealBuiltIn /\<package\.loadlib\>/
+syn match tealBuiltIn /\<package\.path\>/
+syn match tealBuiltIn /\<coroutine\.running\>/
+syn match tealBuiltIn /\<coroutine\.create\>/
+syn match tealBuiltIn /\<coroutine\.resume\>/
+syn match tealBuiltIn /\<coroutine\.status\>/
+syn match tealBuiltIn /\<coroutine\.wrap\>/
+syn match tealBuiltIn /\<coroutine\.yield\>/
+syn match tealBuiltIn /\<string\.byte\>/
+syn match tealBuiltIn /\<string\.char\>/
+syn match tealBuiltIn /\<string\.dump\>/
+syn match tealBuiltIn /\<string\.find\>/
+syn match tealBuiltIn /\<string\.format\>/
+syn match tealBuiltIn /\<string\.gsub\>/
+syn match tealBuiltIn /\<string\.len\>/
+syn match tealBuiltIn /\<string\.lower\>/
+syn match tealBuiltIn /\<string\.rep\>/
+syn match tealBuiltIn /\<string\.sub\>/
+syn match tealBuiltIn /\<string\.upper\>/
+syn match tealBuiltIn /\<string\.gmatch\>/
+syn match tealBuiltIn /\<string\.match\>/
+syn match tealBuiltIn /\<string\.reverse\>/
+syn match tealBuiltIn /\<table\.pack\>/
+syn match tealBuiltIn /\<table\.unpack\>/
+syn match tealBuiltIn /\<table\.concat\>/
+syn match tealBuiltIn /\<table\.sort\>/
+syn match tealBuiltIn /\<table\.insert\>/
+syn match tealBuiltIn /\<table\.remove\>/
+syn match tealBuiltIn /\<math\.abs\>/
+syn match tealBuiltIn /\<math\.acos\>/
+syn match tealBuiltIn /\<math\.asin\>/
+syn match tealBuiltIn /\<math\.atan\>/
+syn match tealBuiltIn /\<math\.atan2\>/
+syn match tealBuiltIn /\<math\.ceil\>/
+syn match tealBuiltIn /\<math\.sin\>/
+syn match tealBuiltIn /\<math\.cos\>/
+syn match tealBuiltIn /\<math\.tan\>/
+syn match tealBuiltIn /\<math\.deg\>/
+syn match tealBuiltIn /\<math\.exp\>/
+syn match tealBuiltIn /\<math\.floor\>/
+syn match tealBuiltIn /\<math\.log\>/
+syn match tealBuiltIn /\<math\.max\>/
+syn match tealBuiltIn /\<math\.min\>/
+syn match tealBuiltIn /\<math\.huge\>/
+syn match tealBuiltIn /\<math\.fmod\>/
+syn match tealBuiltIn /\<math\.modf\>/
+syn match tealBuiltIn /\<math\.ult\>/
+syn match tealBuiltIn /\<math\.tointeger\>/
+syn match tealBuiltIn /\<math\.maxinteger\>/
+syn match tealBuiltIn /\<math\.mininteger\>/
+syn match tealBuiltIn /\<math\.pow\>/
+syn match tealBuiltIn /\<math\.rad\>/
+syn match tealBuiltIn /\<math\.sqrt\>/
+syn match tealBuiltIn /\<math\.random\>/
+syn match tealBuiltIn /\<math\.randomseed\>/
+syn match tealBuiltIn /\<math\.pi\>/
+syn match tealBuiltIn /\<io\.close\>/
+syn match tealBuiltIn /\<io\.flush\>/
+syn match tealBuiltIn /\<io\.input\>/
+syn match tealBuiltIn /\<io\.lines\>/
+syn match tealBuiltIn /\<io\.open\>/
+syn match tealBuiltIn /\<io\.output\>/
+syn match tealBuiltIn /\<io\.popen\>/
+syn match tealBuiltIn /\<io\.read\>/
+syn match tealBuiltIn /\<io\.stderr\>/
+syn match tealBuiltIn /\<io\.stdin\>/
+syn match tealBuiltIn /\<io\.stdout\>/
+syn match tealBuiltIn /\<io\.tmpfile\>/
+syn match tealBuiltIn /\<io\.type\>/
+syn match tealBuiltIn /\<io\.write\>/
+syn match tealBuiltIn /\<os\.clock\>/
+syn match tealBuiltIn /\<os\.date\>/
+syn match tealBuiltIn /\<os\.difftime\>/
+syn match tealBuiltIn /\<os\.execute\>/
+syn match tealBuiltIn /\<os\.exit\>/
+syn match tealBuiltIn /\<os\.getenv\>/
+syn match tealBuiltIn /\<os\.remove\>/
+syn match tealBuiltIn /\<os\.rename\>/
+syn match tealBuiltIn /\<os\.setlocale\>/
+syn match tealBuiltIn /\<os\.time\>/
+syn match tealBuiltIn /\<os\.tmpname\>/
+syn match tealBuiltIn /\<debug\.debug\>/
+syn match tealBuiltIn /\<debug\.gethook\>/
+syn match tealBuiltIn /\<debug\.getinfo\>/
+syn match tealBuiltIn /\<debug\.getlocal\>/
+syn match tealBuiltIn /\<debug\.getupvalue\>/
+syn match tealBuiltIn /\<debug\.setlocal\>/
+syn match tealBuiltIn /\<debug\.setupvalue\>/
+syn match tealBuiltIn /\<debug\.sethook\>/
+syn match tealBuiltIn /\<debug\.traceback\>/
+syn match tealBuiltIn /\<debug\.getmetatable\>/
+syn match tealBuiltIn /\<debug\.setmetatable\>/
+syn match tealBuiltIn /\<debug\.getregistry\>/
+syn match tealBuiltIn /\<debug\.getuservalue\>/
+syn match tealBuiltIn /\<debug\.setuservalue\>/
+syn match tealBuiltIn /\<debug\.upvalueid\>/
+syn match tealBuiltIn /\<debug\.upvaluejoin\>/
+syn match tealBuiltIn /\<utf8\.char\>/
+syn match tealBuiltIn /\<utf8\.charpattern\>/
+syn match tealBuiltIn /\<utf8\.codepoint\>/
+syn match tealBuiltIn /\<utf8\.codes\>/
+syn match tealBuiltIn /\<utf8\.len\>/
+syn match tealBuiltIn /\<utf8\.offset\>/
 
 " }}}
 " {{{ Highlight
@@ -348,11 +363,13 @@ hi def link tealLocal                        Keyword
 hi def link tealGlobal                       Keyword
 hi def link tealBreak                        Keyword
 hi def link tealReturn                       Keyword
+hi def link tealIn                           Keyword
 hi def link tealSelf                         Special
 " hi def link tealTable                        DraculaGreen
 hi def link tealTable                        Structure
 hi def link tealBasicType                    Type
 hi def link tealFunctionType                 Type
+hi def link tealNominalFuncType              Keyword
 " hi def link tealParens                       
 hi def link tealRecord                       Keyword
 hi def link tealEnum                         Keyword
@@ -372,4 +389,5 @@ hi def link tealLongComment                  Comment
 hi def link tealConstant                     Constant
 hi def link tealNumber                       Number
 hi def link tealOperator                     Operator
+hi def link tealBuiltin                      Identifier
 " }}}
