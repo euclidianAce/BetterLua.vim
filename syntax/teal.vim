@@ -241,8 +241,8 @@ syn keyword tealConstant nil true false
 " {{{ Strings
 syn match tealSpecial contained #\\[\\abfnrtvz'"]\|\\x[[:xdigit:]]\{2}\|\\[[:digit:]]\{,3}#
 syn region tealLongString matchgroup=tealString start="\[\z(=*\)\[" end="\]\z1\]" contains=@Spell
-syn region tealString  start=+'+ end=+'+ skip=+\\\\\|\\'+ contains=luaSpecial,@Spell
-syn region tealString  start=+"+ end=+"+ skip=+\\\\\|\\"+ contains=luaSpecial,@Spell
+syn region tealString  start=+'+ end=+'+ skip=+\\\\\|\\'+ contains=tealSpecial,@Spell
+syn region tealString  start=+"+ end=+"+ skip=+\\\\\|\\"+ contains=tealSpecial,@Spell
 " }}}
 " {{{ Numbers
 " integer number
@@ -403,6 +403,7 @@ hi def link tealGoto                         Keyword
 hi def link tealLabel                        Label
 hi def link tealString                       String
 hi def link tealLongString                   String
+hi def link tealSpecial                      Special
 hi def link tealComment                      Comment
 hi def link tealLongComment                  Comment
 hi def link tealConstant                     Constant
