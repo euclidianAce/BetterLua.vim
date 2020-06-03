@@ -1,40 +1,14 @@
 # Better Lua Syntax For Vim 
-### It's just what it says on the tin.
+### It's just what it says on the tin. (and a little more)
 
 Edited from the original vim file, it adds support for 5.3 and 5.4, while
 removing support for 4.0 and 5.0 because literally nobody ever uses those
 anymore.
 
-# Installation
-- Vundle
-```
-Plugin '3uclidian/BetterLua.vim' 
-```
-- NeoBundle
-```
-NeoBundle '3uclidian/BetterLua.vim' 
-```
-- Vim Plug
-```
-Plug '3uclidian/BetterLua.vim'
-```
-- Pathogen
-```
-cd ~/.vim/bundle
-git clone https://github.com/3uclidian/BetterLua.vim
-```
-- Vim 8 package
-
-cd into your preferred directory,
-`cd ~/.vim/pack/*/opt/` or `cd ~/.vim/pack/*/start/`
-```
-git clone https://github.com/3uclidian/BetterLua.vim
-```
-If necessary, add
-```
-packadd! BetterLua.vim
-```
-to your vimrc
+### Teal!
+[Teal](https://github.com/teal-language/tl/) is a typed dialect of Lua (think
+typescript but for Lua) that I have quite enjoyed using, so I've taken the
+liberty of adopting a Lua syntax file into a Teal one.
 
 # Changes
 - Built in functions are given a different highlight group so they actually show
