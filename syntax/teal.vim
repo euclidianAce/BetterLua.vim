@@ -8,7 +8,7 @@ syn cluster tealBase contains=
 	\ tealBuiltin
 syn cluster tealExpression contains=
 	\ @tealBase,tealParen,tealBracket,tealBrace,
-	\ tealOperator,tealFunctionBlock,tealFunctionCall,tealError,
+	\ tealOperator,tealFunctionBlock,tealFunctionCall,
 	\ tealTableConstructor,tealRecordBlock,tealEnumBlock,tealSelf
 syn cluster tealStatement contains=
 	\ @tealExpression,tealIfThen,tealThenEnd,tealBlock,tealLoop,
@@ -42,7 +42,7 @@ syn region tealParenTypes contained transparent
 	\ matchgroup=tealParen
 	\ start=/(/ end=/)/
 	\ contains=@tealType
-	\ nextgroup=tealUnion,tealTypeComma
+	\ nextgroup=tealUnion
 	\ skipwhite skipempty skipnl
 syn region tealTableType start=/{/ end=/}/ contained
 	\ nextgroup=tealUnion,tealTypeComma
@@ -55,7 +55,7 @@ syn cluster tealType contains=
 	\ tealParenTypesAnnotation,
 	\ tealParenTypes,
 	\ tealTableType
-syn match tealTypeAnnotation /:/
+syn match tealTypeAnnotation /:/ contained
 	\ nextgroup=@tealType
 	\ skipwhite skipempty skipnl
 " }}}
@@ -85,13 +85,55 @@ syn region tealNominalFuncGeneric contained transparent
 	\ nextgroup=tealFunctionTypeArgs
 	\ skipwhite skipempty skipnl
 " }}}
+" {{{ Function call
+syn match tealFunctionCall /\K\k*\s*\n*\s*\("\|'\|(\|{\|\[=*\[\)\@=/
+" }}}
+" {{{ local ... <const>, global ... <const>, break, return, self
+syn region tealAttributeBrackets contained transparent
+	\ matchgroup=tealParens
+	\ start=/</ end=/>/
+	\ contains=tealAttribute
+	\ nextgroup=tealVarComma,tealTypeAnnotation
+	\ skipwhite skipempty skipnl
+syn match tealAttribute contained /\K\k*/
+syn match tealVarName contained /\K\k*/
+	\ nextgroup=tealAttributeBrackets,tealVarComma,tealTypeAnnotation
+	\ skipwhite skipempty skipnl
+syn match tealVarComma /,/ contained
+	\ nextgroup=tealVarName
+	\ skipwhite skipempty skipnl
+syn keyword tealLocal local
+	\ nextgroup=tealFunctionBlock,tealVarName
+	\ skipwhite skipempty skipnl
+syn keyword tealGlobal global
+	\ nextgroup=tealFunctionBlock,tealVarName
+	\ skipwhite skipempty skipnl
+syn keyword tealBreak break
+syn keyword tealReturn return
+syn keyword tealSelf self
+
+" }}}
+" {{{ Parens
+syn region tealParen transparent
+	\ matchgroup=tealParens
+	\ start=/(/ end=/)/
+	\ contains=@tealExpression
+syn region tealBracket transparent
+	\ matchgroup=tealBrackets
+	\ start=/\[/ end=/\]/
+	\ contains=@tealExpression
+" }}}
 " {{{ function ... end
-syn region tealFunctionBlock
+syn region tealFunctionBlock transparent
 	\ matchgroup=tealKeyword
 	\ start=/\<function\>/ end=/\<end\>/
-	\ contains=@tealStatement,tealFunctionArgs,
-	\ tealFunctionName
-syn match tealFunctionName contained /\(\<function\>\)\@<=\s\+\K\k*\(\.\K\k*\)*\(:\K\k*\)\?\s*\((\|<\)\@=/
+	\ contains=@tealStatement,tealFunctionSignature
+syn region tealFunctionSignature contained transparent
+	\ start=/\(\<function\>\)\@<=/ end=/)/ keepend
+	\ contains=tealFunctionName,tealFunctionGeneric,tealFunctionArgs
+	" \ nextgroup=tealFunctionGeneric,tealFunctionArgs
+	" \ skipwhite skipempty skipnl
+syn match tealFunctionName /\K\k*\(\.\K\k*\)*\(:\K\k*\)\?/ contained
 	\ nextgroup=tealFunctionGeneric,tealFunctionArgs
 	\ skipwhite skipempty skipnl
 syn region tealFunctionGeneric contained transparent
@@ -104,29 +146,25 @@ syn region tealFunctionArgs contained transparent
 	\ start=/(/ end=/)/
 	\ contains=@tealBase,tealFunctionArgName,
 	\ tealFunctionArgTypeAnnotation,@tealType
-	\ nextgroup=tealFunctionReturnTypeAnnotation
+	\ nextgroup=tealTypeAnnotation
 syn match tealFunctionArgName contained /\K\k*/
 	\ nextgroup=tealFunctionArgTypeAnnotation,tealFunctionArgComma
 	\ skipwhite skipempty skipnl
 syn region tealFunctionArgTypeAnnotation contained transparent
-	\ start=/:/ end=/\(,\|)\)\@=/
+	\ start=/:/ end=/\(,\|)\)\@=/ skip=/:/
 	\ contains=@tealType
 	\ nextgroup=tealFunctionArgName
 	\ skipwhite skipempty skipnl
-syn match tealFunctionReturnTypeAnnotation /:/ contained
-	\ nextgroup=@tealType
-	\ skipwhite skipempty skipnl
-
-" TODO: support functions with multiple returns without using parens
-
-
-
 " }}}
 " {{{ record ... end
 syn region tealRecordBlock
 	\ matchgroup=tealRecord transparent
  	\ start=/\<record\>/ end=/\<end\>/
-	\ contains=tealRecordItem,tealRecordTypeAnnotation,tealRecordAssign
+	\ contains=tealRecordItem,tealRecordTypeAnnotation,
+	\ tealRecordAssign,tealRecordGeneric
+syn region tealRecordGeneric contained
+	\ start=/</ end=/>/
+	\ contains=@tealType
 syn match tealRecordItem /\K\k\*/ contained
 	\ nextgroup=tealRecordTypeAnnotation,tealRecordAssign
 	\ skipwhite skipnl skipempty
@@ -183,50 +221,12 @@ syn region tealRepeatBlock
 	\ contains=@tealStatement
 	\ start=/\<repeat\>/ end=/\<until\>/
 " }}}
-" {{{ local ... <const>, global ... <const>, break, return, self
-syn region tealAttributeBrackets contained transparent
-	\ matchgroup=tealParens
-	\ start=/</ end=/>/
-	\ contains=tealAttribute
-	\ nextgroup=tealVarComma,tealTypeAnnotation
-	\ skipwhite skipempty skipnl
-syn match tealAttribute contained /\K\k*/
-syn match tealVarName contained /\K\k*/
-	\ nextgroup=tealAttributeBrackets,tealVarComma,tealTypeAnnotation
-	\ skipwhite skipempty skipnl
-syn match tealVarComma /,/ contained
-	\ nextgroup=tealVarName
-	\ skipwhite skipempty skipnl
-syn keyword tealLocal local
-	\ nextgroup=tealVarName
-	\ skipwhite skipempty skipnl
-syn keyword tealGlobal global
-	\ nextgroup=tealVarName
-	\ skipwhite skipempty skipnl
-syn keyword tealBreak break
-syn keyword tealReturn return
-syn keyword tealSelf self
-
-" }}}
-" {{{ Parens
-syn region tealParen transparent
-	\ matchgroup=tealParens
-	\ start=/(/ end=/)/
-	\ contains=@tealExpression
-syn region tealBracket transparent
-	\ matchgroup=tealBrackets
-	\ start=/\[/ end=/\]/
-	\ contains=@tealExpression
-" }}}
 " {{{ Table Constructor
 syn region tealTableConstructor
 	\ matchgroup=tealTable
 	\ start=/{/ end=/}/
-	\ contains=@tealExpression
+	\ contains=@tealExpression,tealTypeAnnotation
 
-" }}}
-" {{{ Function call
-syn match tealFunctionCall /\K\k*\("\|'\|(\|{\|\[=*\[\)\@=/
 " }}}
 " {{{ Goto
 syn keyword tealGoto goto
