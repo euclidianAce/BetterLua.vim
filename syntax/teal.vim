@@ -7,7 +7,7 @@ syn cluster tealBase contains=
 	\ tealConstant,tealNumber,tealString,tealLongString,
 	\ tealBuiltin
 syn cluster tealExpression contains=
-	\ @tealBase,tealParen,tealBracket,tealBrace,
+	\ @tealBase,tealParen,tealBracket,tealBrace,tealColon,
 	\ tealOperator,tealFunctionBlock,tealFunctionCall,tealError,
 	\ tealTableConstructor,tealRecordBlock,tealEnumBlock,tealSelf
 syn cluster tealStatement contains=
@@ -90,7 +90,8 @@ syn region tealNominalFuncGeneric contained transparent
 	\ skipwhite skipempty skipnl
 " }}}
 " {{{ Function call
-syn match tealFunctionCall /\K\k*\s*\n*\s*\("\|'\|(\|{\|\[=*\[\)\@=/
+syn match tealColon /:/ nextgroup=tealFunctionCall
+syn match tealFunctionCall /\(:\?\)\K\k*\s*\n*\s*\("\|'\|(\|{\|\[=*\[\)\@=/
 " }}}
 " {{{ local ... <const>, global ... <const>, break, return, self
 syn region tealAttributeBrackets contained transparent
