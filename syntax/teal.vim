@@ -8,7 +8,7 @@ syn cluster tealBase contains=
 	\ tealBuiltin
 syn cluster tealExpression contains=
 	\ @tealBase,tealParen,tealBracket,tealBrace,
-	\ tealOperator,tealFunctionBlock,tealFunctionCall,
+	\ tealOperator,tealFunctionBlock,tealFunctionCall,tealError,
 	\ tealTableConstructor,tealRecordBlock,tealEnumBlock,tealSelf
 syn cluster tealStatement contains=
 	\ @tealExpression,tealIfThen,tealThenEnd,tealBlock,tealLoop,
@@ -16,6 +16,10 @@ syn cluster tealStatement contains=
 	\ tealGoto,tealLabel,tealBreak,tealReturn,
 	\ tealLocal,tealGlobal,tealTypeAnnotation
 
+" {{{ ), ], end, etc error
+syntax match tealError "\()\|}\|\]\)"
+syntax match tealError "\<\%(end\|else\|elseif\|then\|until\|in\)\>"
+" }}}
 " {{{ Types
 syn match tealTypeComma /,/ contained
 	\ nextgroup=@tealType
@@ -29,7 +33,7 @@ syn match tealBasicType /\K\k*\(\.\K\k*\)*/ contained
 syn match tealFunctionType /\<function\>/ contained
 	\ nextgroup=tealFunctionTypeArgs,tealUnion,tealTypeComma
 	\ skipwhite skipempty skipnl
-syn region tealFunctionTypeArgs contained transparent
+syn region tealFunctionTypeArgs contained transparent extend
 	\ matchgroup=tealParen
 	\ start=/(/ end=/)/
 	\ contains=@tealType
@@ -38,7 +42,7 @@ syn region tealFunctionTypeArgs contained transparent
 syn match tealParenTypesAnnotation /:/ contained
 	\ nextgroup=@tealType,tealParenTypes
 	\ skipwhite skipempty skipnl
-syn region tealParenTypes contained transparent
+syn region tealParenTypes contained transparent extend
 	\ matchgroup=tealParen
 	\ start=/(/ end=/)/
 	\ contains=@tealType
@@ -131,8 +135,6 @@ syn region tealFunctionBlock transparent
 syn region tealFunctionSignature contained transparent
 	\ start=/\(\<function\>\)\@<=/ end=/)/ keepend
 	\ contains=tealFunctionName,tealFunctionGeneric,tealFunctionArgs
-	" \ nextgroup=tealFunctionGeneric,tealFunctionArgs
-	" \ skipwhite skipempty skipnl
 syn match tealFunctionName /\K\k*\(\.\K\k*\)*\(:\K\k*\)\?/ contained
 	\ nextgroup=tealFunctionGeneric,tealFunctionArgs
 	\ skipwhite skipempty skipnl
@@ -161,7 +163,7 @@ syn region tealRecordBlock
 	\ matchgroup=tealRecord transparent
  	\ start=/\<record\>/ end=/\<end\>/
 	\ contains=tealRecordItem,tealRecordTypeAnnotation,
-	\ tealRecordAssign,tealRecordGeneric
+	\ tealRecordAssign,tealRecordGeneric,tealTableType
 syn region tealRecordGeneric contained
 	\ start=/</ end=/>/
 	\ contains=@tealType
@@ -374,7 +376,6 @@ syn match tealBuiltIn /\<utf8\.offset\>/
 " {{{ Highlight
 hi def link tealKeyword                      Keyword
 hi def link tealFunctionName                 Function
-" hi def link tealFunctionArgName              DraculaOrange
 hi def link tealFunctionArgName              Identifier
 hi def link tealLocal                        Keyword
 hi def link tealGlobal                       Keyword
@@ -408,4 +409,5 @@ hi def link tealConstant                     Constant
 hi def link tealNumber                       Number
 hi def link tealOperator                     Operator
 hi def link tealBuiltin                      Identifier
+hi def link tealError                        Error
 " }}}
