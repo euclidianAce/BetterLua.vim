@@ -18,7 +18,6 @@ syn case match
 " syncing method
 syn sync minlines=100
 
-syn match luaVarargs "\V..."
 " {{{ Operators
 syn match luaOperator "\V+"
 syn match luaOperator "\V-"
@@ -32,6 +31,7 @@ syn match luaOperator "\V.."
 syn match luaOperator "\V="
 syn match luaOperator "\V#"
 syn keyword luaOperator and or not
+syn match luaVarargs "\V..."
 
 if g:lua_subversion >= 3
   syn match luaOperator "\V&"
