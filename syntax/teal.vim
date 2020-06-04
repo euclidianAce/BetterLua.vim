@@ -7,14 +7,15 @@ syn cluster tealBase contains=
 	\ tealConstant,tealNumber,tealString,tealLongString,
 	\ tealBuiltin
 syn cluster tealExpression contains=
-	\ @tealBase,tealParen,tealBracket,tealBrace,tealColon,
+	\ @tealBase,tealParen,tealBracket,tealBrace,
 	\ tealOperator,tealFunctionBlock,tealFunctionCall,tealError,
-	\ tealTableConstructor,tealRecordBlock,tealEnumBlock,tealSelf
+	\ tealTableConstructor,tealRecordBlock,tealEnumBlock,tealSelf,
+	\ tealColon
 syn cluster tealStatement contains=
 	\ @tealExpression,tealIfThen,tealThenEnd,tealBlock,tealLoop,
 	\ tealRepeatBlock,tealWhileDo,tealForDo,
 	\ tealGoto,tealLabel,tealBreak,tealReturn,
-	\ tealLocal,tealGlobal,tealTypeAnnotation
+	\ tealLocal,tealGlobal
 
 " {{{ ), ], end, etc error
 syntax match tealError "\()\|}\|\]\)"
@@ -63,6 +64,12 @@ syn match tealTypeAnnotation /:/ contained
 	\ nextgroup=@tealType
 	\ skipwhite skipempty skipnl
 " }}}
+" {{{ Function call
+syn match tealColon /:/
+	\ nextgroup=@tealType,tealFunctionCall
+	\ skipwhite skipempty skipnl
+syn match tealFunctionCall /\(:\?\)\@=\K\k*\s*\n*\s*\("\|'\|(\|{\|\[=*\[\)\@=/
+" }}}
 " {{{ Operators
 " Symbols
 syn match tealOperator "[#<>=~^&|*/%+-]\|\.\."
@@ -88,10 +95,6 @@ syn region tealNominalFuncGeneric contained transparent
 	\ contains=tealBasicType
 	\ nextgroup=tealFunctionTypeArgs
 	\ skipwhite skipempty skipnl
-" }}}
-" {{{ Function call
-syn match tealColon /:/ nextgroup=tealFunctionCall
-syn match tealFunctionCall /\(:\?\)\K\k*\s*\n*\s*\("\|'\|(\|{\|\[=*\[\)\@=/
 " }}}
 " {{{ local ... <const>, global ... <const>, break, return, self
 syn region tealAttributeBrackets contained transparent
