@@ -185,7 +185,7 @@ syn match tealRecordItem /\K\k*/ contained
 	\ nextgroup=tealTypeAnnotation,tealRecordAssign
 	\ skipwhite skipnl skipempty
 syn match tealRecordAssign /=/ contained
-	\ nextgroup=tealRecordBlock
+	\ nextgroup=tealRecordBlock,tealEnumBlock
 	\ skipwhite skipnl skipempty
 " }}}
 " {{{ enum ... end
