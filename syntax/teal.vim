@@ -10,7 +10,7 @@ syn cluster tealExpression contains=
 	\ @tealBase,tealParen,tealBracket,tealBrace,
 	\ tealOperator,tealFunctionBlock,tealFunctionCall,tealError,
 	\ tealTableConstructor,tealRecordBlock,tealEnumBlock,tealSelf,
-	\ tealColon
+	\ tealColon,tealVarargs
 syn cluster tealStatement contains=
 	\ @tealExpression,tealIfThen,tealThenEnd,tealBlock,tealLoop,
 	\ tealRepeatBlock,tealWhileDo,tealForDo,
@@ -78,6 +78,7 @@ syn keyword tealOperator and or not
 syn keyword tealOperator is as
 	\ nextgroup=@tealType
 	\ skipempty skipnl skipwhite
+syn match tealVarargs /\.\.\./
 " }}}
 " {{{ Comments
 syn match tealComment "\%^#!.*$"
