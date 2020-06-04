@@ -1,6 +1,6 @@
 
 syn case match
-syn sync minlines=100
+syn sync fromstart
 
 syn cluster tealBase contains=
 	\ tealComment,tealLongComment,
@@ -29,10 +29,10 @@ syn match tealUnion /|/ contained
 	\ nextgroup=@tealType
 	\ skipwhite skipempty skipnl
 syn match tealBasicType /\K\k*\(\.\K\k*\)*/ contained
-	\ nextgroup=tealUnion,tealTypeComma
+	\ nextgroup=tealGenericType,tealUnion,tealTypeComma
 	\ skipwhite skipempty skipnl
 syn match tealFunctionType /\<function\>/ contained
-	\ nextgroup=tealFunctionTypeArgs,tealUnion,tealTypeComma
+	\ nextgroup=tealGenericType,tealFunctionTypeArgs,tealUnion,tealTypeComma
 	\ skipwhite skipempty skipnl
 syn region tealFunctionTypeArgs contained transparent extend
 	\ matchgroup=tealParen
@@ -53,13 +53,18 @@ syn region tealTableType start=/{/ end=/}/ contained
 	\ nextgroup=tealUnion,tealTypeComma
 	\ skipwhite skipempty skipnl
 	\ contains=@tealType
+syn region tealGenericType start=/</ end=/>/ transparent contained
+	\ nextgroup=tealUnion,tealTypeComma
+	\ skipwhite skipempty skipnl
+	\ contains=@tealType
 syn cluster tealType contains=
 	\ tealBasicType,
 	\ tealFunctionType,
 	\ tealFunctionTypeArgs,
 	\ tealParenTypesAnnotation,
 	\ tealParenTypes,
-	\ tealTableType
+	\ tealTableType,
+	\ tealGenericType
 syn match tealTypeAnnotation /:/ contained
 	\ nextgroup=@tealType
 	\ skipwhite skipempty skipnl
@@ -167,16 +172,17 @@ syn region tealFunctionArgTypeAnnotation contained transparent
 syn region tealRecordBlock
 	\ matchgroup=tealRecord transparent
  	\ start=/\<record\>/ end=/\<end\>/
-	\ contains=tealRecordItem,tealRecordTypeAnnotation,
-	\ tealRecordAssign,tealRecordGeneric,tealTableType
-syn region tealRecordGeneric contained
-	\ start=/</ end=/>/
+	\ contains=tealRecordItem,
+	\ tealRecordAssign,tealRecordGeneric,tealTableType,
+	\ tealComment,tealLongComment
+syn region tealRecordGeneric contained transparent
+	\ matchgroup=tealParens
+	\ start=/\(\<record\>\)\@<=\s*</ end=/>/
 	\ contains=@tealType
-syn match tealRecordItem /\K\k\*/ contained
-	\ nextgroup=tealRecordTypeAnnotation,tealRecordAssign
+	\ nextgroup=tealRecordItem
 	\ skipwhite skipnl skipempty
-syn match tealRecordTypeAnnotation /:/ contained
-	\ nextgroup=@tealType
+syn match tealRecordItem /\K\k*/ contained
+	\ nextgroup=tealTypeAnnotation,tealRecordAssign
 	\ skipwhite skipnl skipempty
 syn match tealRecordAssign /=/ contained
 	\ nextgroup=tealRecordBlock
@@ -186,7 +192,7 @@ syn match tealRecordAssign /=/ contained
 syn region tealEnumBlock
 	\ matchgroup=tealEnum transparent
 	\ start="\<enum\>" end="\<end\>"
-	\ contains=tealString
+	\ contains=tealString,tealLongString,tealComment,tealLongComment
 " }}}
 " {{{ if ... then, elseif ... then, then ... end, else
 syn region tealIfThen
