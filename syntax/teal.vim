@@ -37,13 +37,14 @@ syn match tealFunctionType /\<function\>/ contained
 syn region tealGenericType start=/</ end=/>/ transparent contained
 	\ nextgroup=tealUnion,tealTypeComma
 	\ skipwhite skipempty skipnl
-	\ contains=@tealType
+	\ contains=tealGeneric
 syn region tealFunctionGenericType 
 	\ matchgroup=tealParen
 	\ start=/</ end=/>/ transparent contained
 	\ nextgroup=tealFunctionTypeArgs
 	\ skipwhite skipempty skipnl
-	\ contains=@tealType
+	\ contains=tealGeneric
+syn match tealGeneric contained /\K\k*/
 syn region tealFunctionTypeArgs contained transparent extend
 	\ matchgroup=tealParen
 	\ start=/(/ end=/)/
@@ -100,13 +101,8 @@ syn region tealLongComment start=/--\[\z(=*\)\[/ end=/\]\z1\]/
 " }}}
 " {{{ functiontype
 syn keyword tealNominalFuncType functiontype
-	\ nextgroup=tealNominalFuncGeneric,tealFunctionTypeArgs
+	\ nextgroup=tealFunctionGenericType,tealFunctionTypeArgs
 	\ skipempty skipnl skipwhite
-syn region tealNominalFuncGeneric contained transparent
-	\ start=/</ end=/>/
-	\ contains=tealBasicType
-	\ nextgroup=tealFunctionTypeArgs
-	\ skipwhite skipempty skipnl
 " }}}
 " {{{ local ... <const>, global ... <const>, break, return, self
 syn region tealAttributeBrackets contained transparent
@@ -156,7 +152,7 @@ syn match tealFunctionName /\K\k*\(\.\K\k*\)*\(:\K\k*\)\?/ contained
 	\ skipwhite skipempty skipnl
 syn region tealFunctionGeneric contained transparent
 	\ start=/</ end=/>/
-	\ contains=tealBasicType
+	\ contains=tealGeneric
 	\ nextgroup=tealFunctionArgs
 	\ skipwhite skipempty skipnl
 syn region tealFunctionArgs contained transparent
@@ -429,4 +425,5 @@ hi def link tealNumber                       Number
 hi def link tealOperator                     Operator
 hi def link tealBuiltin                      Identifier
 hi def link tealError                        Error
+hi def link tealGeneric                      Type
 " }}}
