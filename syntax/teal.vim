@@ -1,13 +1,19 @@
 
+if exists("b:current_syntax")
+	finish
+endif
+
+let s:cpo_save = &cpo
+set cpo&vim
+
 syn case match
 syn sync fromstart
 
 syn cluster tealBase contains=
 	\ tealComment,tealLongComment,
-	\ tealConstant,tealNumber,tealString,tealLongString,
-	\ tealBuiltin
+	\ tealConstant,tealNumber,tealString,tealLongString
 syn cluster tealExpression contains=
-	\ @tealBase,tealParen,tealBracket,tealBrace,
+	\ @tealBase,tealParen,tealBuiltin,tealBracket,tealBrace,
 	\ tealOperator,tealFunctionBlock,tealFunctionCall,tealError,
 	\ tealTableConstructor,tealRecordBlock,tealEnumBlock,tealSelf,
 	\ tealColon,tealVarargs
@@ -39,14 +45,14 @@ syn region tealGenericType start=/</ end=/>/ transparent contained
 	\ skipwhite skipempty skipnl
 	\ contains=tealGeneric
 syn region tealFunctionGenericType 
-	\ matchgroup=tealParen
+	\ matchgroup=tealParens
 	\ start=/</ end=/>/ transparent contained
 	\ nextgroup=tealFunctionTypeArgs
 	\ skipwhite skipempty skipnl
 	\ contains=tealGeneric
 syn match tealGeneric contained /\K\k*/
 syn region tealFunctionTypeArgs contained transparent extend
-	\ matchgroup=tealParen
+	\ matchgroup=tealParens
 	\ start=/(/ end=/)/
 	\ contains=@tealType
 	\ nextgroup=tealParenTypesAnnotation
@@ -55,7 +61,7 @@ syn match tealParenTypesAnnotation /:/ contained
 	\ nextgroup=@tealType,tealParenTypes
 	\ skipwhite skipempty skipnl
 syn region tealParenTypes contained transparent extend
-	\ matchgroup=tealParen
+	\ matchgroup=tealParens
 	\ start=/(/ end=/)/
 	\ contains=@tealType
 	\ nextgroup=tealUnion
@@ -152,7 +158,7 @@ syn match tealFunctionName /\K\k*\(\.\K\k*\)*\(:\K\k*\)\?/ contained
 	\ skipwhite skipempty skipnl
 syn region tealFunctionGeneric contained transparent
 	\ start=/</ end=/>/
-	\ contains=tealGeneric
+	\ contains=tealBasicType
 	\ nextgroup=tealFunctionArgs
 	\ skipwhite skipempty skipnl
 syn region tealFunctionArgs contained transparent
@@ -180,7 +186,7 @@ syn region tealRecordBlock
 syn region tealRecordGeneric contained transparent
 	\ matchgroup=tealParens
 	\ start=/\(\<record\>\)\@<=\s*</ end=/>/
-	\ contains=@tealType
+	\ contains=tealGeneric
 	\ nextgroup=tealRecordItem
 	\ skipwhite skipnl skipempty
 syn match tealRecordItem /\K\k*/ contained
@@ -388,42 +394,46 @@ syn match tealBuiltIn /\<utf8\.offset\>/
 
 " }}}
 " {{{ Highlight
-hi def link tealKeyword                      Keyword
-hi def link tealFunctionName                 Function
-hi def link tealFunctionArgName              Identifier
-hi def link tealLocal                        Keyword
-hi def link tealGlobal                       Keyword
-hi def link tealBreak                        Keyword
-hi def link tealReturn                       Keyword
-hi def link tealIn                           Keyword
-hi def link tealSelf                         Special
-" hi def link tealTable                        DraculaGreen
-hi def link tealTable                        Structure
-hi def link tealBasicType                    Type
-hi def link tealFunctionType                 Type
-hi def link tealNominalFuncType              Keyword
-hi def link tealAttribute                    StorageClass
-" hi def link tealParens                       
-hi def link tealRecord                       Keyword
-hi def link tealEnum                         Keyword
-hi def link tealIfStatement                  Conditional
-hi def link tealElse                         Conditional
-hi def link tealFor                          Repeat
-hi def link tealWhile                        Repeat
-hi def link tealDoEnd                        Keyword
-hi def link tealRepeatUntil                  Repeat
-hi def link tealFunctionCall                 Function
-hi def link tealGoto                         Keyword
-hi def link tealLabel                        Label
-hi def link tealString                       String
-hi def link tealLongString                   String
-hi def link tealSpecial                      Special
-hi def link tealComment                      Comment
-hi def link tealLongComment                  Comment
-hi def link tealConstant                     Constant
-hi def link tealNumber                       Number
-hi def link tealOperator                     Operator
-hi def link tealBuiltin                      Identifier
-hi def link tealError                        Error
-hi def link tealGeneric                      Type
+hi def link tealKeyword               Keyword
+hi def link tealFunctionName          Function
+hi def link tealFunctionArgName       Identifier
+hi def link tealLocal                 Keyword
+hi def link tealGlobal                Keyword
+hi def link tealBreak                 Keyword
+hi def link tealReturn                Keyword
+hi def link tealIn                    Keyword
+hi def link tealSelf                  Special
+hi def link tealTable                 Structure
+hi def link tealBasicType             Type
+hi def link tealFunctionType          Type
+hi def link tealNominalFuncType       Keyword
+hi def link tealAttribute             StorageClass
+hi def link tealParens                Identifier
+hi def link tealRecord                Keyword
+hi def link tealEnum                  Keyword
+hi def link tealIfStatement           Conditional
+hi def link tealElse                  Conditional
+hi def link tealFor                   Repeat
+hi def link tealWhile                 Repeat
+hi def link tealDoEnd                 Keyword
+hi def link tealRepeatUntil           Repeat
+hi def link tealFunctionCall          Function
+hi def link tealGoto                  Keyword
+hi def link tealLabel                 Label
+hi def link tealString                String
+hi def link tealLongString            String
+hi def link tealSpecial               Special
+hi def link tealComment               Comment
+hi def link tealLongComment           Comment
+hi def link tealConstant              Constant
+hi def link tealNumber                Number
+hi def link tealOperator              Operator
+hi def link tealBuiltin               Identifier
+hi def link tealError                 Error
+hi def link tealGeneric               Type
 " }}}
+
+let b:current_syntax = "teal"
+
+let &cpo = s:cpo_save
+unlet s:cpo_save
