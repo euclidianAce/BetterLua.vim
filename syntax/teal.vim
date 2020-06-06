@@ -32,8 +32,18 @@ syn match tealBasicType /\K\k*\(\.\K\k*\)*/ contained
 	\ nextgroup=tealGenericType,tealUnion,tealTypeComma
 	\ skipwhite skipempty skipnl
 syn match tealFunctionType /\<function\>/ contained
-	\ nextgroup=tealGenericType,tealFunctionTypeArgs,tealUnion,tealTypeComma
+	\ nextgroup=tealFunctionGenericType,tealFunctionTypeArgs,tealUnion,tealTypeComma
 	\ skipwhite skipempty skipnl
+syn region tealGenericType start=/</ end=/>/ transparent contained
+	\ nextgroup=tealUnion,tealTypeComma
+	\ skipwhite skipempty skipnl
+	\ contains=@tealType
+syn region tealFunctionGenericType 
+	\ matchgroup=tealParen
+	\ start=/</ end=/>/ transparent contained
+	\ nextgroup=tealFunctionTypeArgs
+	\ skipwhite skipempty skipnl
+	\ contains=@tealType
 syn region tealFunctionTypeArgs contained transparent extend
 	\ matchgroup=tealParen
 	\ start=/(/ end=/)/
@@ -50,10 +60,6 @@ syn region tealParenTypes contained transparent extend
 	\ nextgroup=tealUnion
 	\ skipwhite skipempty skipnl
 syn region tealTableType start=/{/ end=/}/ contained
-	\ nextgroup=tealUnion,tealTypeComma
-	\ skipwhite skipempty skipnl
-	\ contains=@tealType
-syn region tealGenericType start=/</ end=/>/ transparent contained
 	\ nextgroup=tealUnion,tealTypeComma
 	\ skipwhite skipempty skipnl
 	\ contains=@tealType
@@ -187,6 +193,7 @@ syn match tealRecordItem /\K\k*/ contained
 syn match tealRecordAssign /=/ contained
 	\ nextgroup=tealRecordBlock,tealEnumBlock
 	\ skipwhite skipnl skipempty
+hi def link tealRecordAssign tealOperator
 " }}}
 " {{{ enum ... end
 syn region tealEnumBlock
