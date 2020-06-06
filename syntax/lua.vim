@@ -14,9 +14,7 @@ if !exists("lua_subversion")
 endif
 
 syn case match
-
-" syncing method
-syn sync minlines=100
+syn sync fromstart
 
 " {{{ Operators
 syn match luaOperator "\V+"
@@ -185,9 +183,9 @@ syn region luaString  start=+"+ end=+"+ skip=+\\\\\|\\"+ contains=luaSpecial,@Sp
 " {{{ 5.4 <const>
 if lua_subversion >= 4
   " local ... <attrib>
-  syn match luaLocalAttrib "<\zs\w\+\ze>" containedin=luaLocalAttribTag
+  syn match luaLocalAttrib "<\zs\w\+\ze>" contained containedin=luaLocalAttribTag
   syn region luaLocalAttribTag transparent start="<" end=">" containedin=luaLocalDec contains=NONE
-  syn region luaLocalDec transparent start="\<local\>" end="\<=\>" contains=NONE
+  syn region luaLocalDec transparent start="\<local\>" end="\<=\>" contains=luaLocalAttribTag
   syn cluster luaLocal contains=luaLocalDec,luaLocalAttribTag,luaLocalAttrib
 endif
 " }}}

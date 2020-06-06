@@ -5,7 +5,7 @@ Edited from the original vim file, it adds support for 5.3 and 5.4, while
 removing support for 4.0 and 5.0 because literally nobody ever uses those
 anymore.
 
-### Teal!
+### Teal! (moved to teal-language/vim-teal)
 [Teal](https://github.com/teal-language/tl/) is a typed dialect of Lua (think
 typescript but for Lua) that I have quite enjoyed using, so I've taken the
 liberty of adopting a Lua syntax file into a Teal one.
