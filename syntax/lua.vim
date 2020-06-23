@@ -110,7 +110,7 @@ syn match emmyLuaAliasType "\w\+" nextgroup=emmyLuaComment skipwhite containedin
 
 syn match emmyLuaVarName "\w\+" nextgroup=emmyLuaTypes containedin=emmyLua contained
 
-syn match emmyLuaTypeAndSuperTypes "\w\+\s*\(\:\s*\w\+\s*\)*" containedin=emmyLua transparent
+syn match emmyLuaTypeAndSuperTypes "\w\+\s*\(\:\s*\w\+\s*\)*" contained containedin=emmyLua transparent
 syn match emmyLuaTypes "\w\+\s*\(|\s*\w\+\s*\)*" containedin=emmyLua transparent contained
 syn match emmyLuaTypeName "\w\+" containedin=emmyLua contained
 syn match emmyLuaTypeSymbols ":" containedin=emmyLuaTypeAndSuperTypes contained
