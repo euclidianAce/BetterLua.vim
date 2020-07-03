@@ -161,7 +161,10 @@ endif
 syn keyword luaConstant nil true false
 " }}}
 " {{{ Strings
-syn match luaSpecial contained #\\[\\abfnrtvz'"]\|\\x[[:xdigit:]]\{2}\|\\[[:digit:]]\{,3}#
+syn match luaSpecial contained #\\[\\abfnrtv'"]\|\\x[[:xdigit:]]\{2}\|\\[[:digit:]]\{,3}#
+if lua_subversion >= 2
+	syn match luaSpecial contained #\\z#
+endif
 syn region luaLongString matchgroup=luaString start="\[\z(=*\)\[" end="\]\z1\]" contains=@Spell
 syn region luaString  start=+'+ end=+'+ skip=+\\\\\|\\'+ contains=luaSpecial,@Spell
 syn region luaString  start=+"+ end=+"+ skip=+\\\\\|\\"+ contains=luaSpecial,@Spell
@@ -185,9 +188,61 @@ syn keyword luaBuiltIn assert error collectgarbage
 	\ getmetatable setmetatable
 	\ ipairs pairs next
 	\ pcall xpcall
-	\ _G _ENV _VERSION require
+	\ _G _VERSION require
 	\ rawequal rawget rawset rawlen
 	\ loadfile load dofile select
+
+if lua_subversion >= 4
+	syn match luaBuiltIn /\<coroutine\.close\>/
+	syn keyword luaBuiltIn warn
+endif
+if lua_subversion < 3
+	syn match luaBuiltIn /\<math\.sinh\>/
+	syn match luaBuiltIn /\<math\.cosh\>/
+	syn match luaBuiltIn /\<math\.tanh\>/
+	syn match luaBuiltIn /\<math\.atan2\>/
+	syn match luaBuiltIn /\<math\.frexp\>/
+	syn match luaBuiltIn /\<math\.ldexp\>/
+else
+	syn match luaBuiltIn /\<table\.move\>/
+	syn match luaBuiltIn /\<string\.pack\>/
+	syn match luaBuiltIn /\<string\.unpack\>/
+	syn match luaBuiltIn /\<string\.packsize\>/
+	syn match luaBuiltIn /\<utf8\.char\>/
+	syn match luaBuiltIn /\<utf8\.charpattern\>/
+	syn match luaBuiltIn /\<utf8\.codepoint\>/
+	syn match luaBuiltIn /\<utf8\.codes\>/
+	syn match luaBuiltIn /\<utf8\.len\>/
+	syn match luaBuiltIn /\<utf8\.offset\>/
+	syn match luaBuiltIn /\<math\.ult\>/
+	syn match luaBuiltIn /\<math\.tointeger\>/
+	syn match luaBuiltIn /\<math\.maxinteger\>/
+	syn match luaBuiltIn /\<math\.mininteger\>/
+endif
+if lua_subversion == 2
+	syn match luaBuiltIn /\<bit32\.arshift\>/
+	syn match luaBuiltIn /\<bit32\.band\>/
+	syn match luaBuiltIn /\<bit32\.bnot\>/
+	syn match luaBuiltIn /\<bit32\.bor\>/
+	syn match luaBuiltIn /\<bit32\.btest\>/
+	syn match luaBuiltIn /\<bit32\.bxor\>/
+	syn match luaBuiltIn /\<bit32\.extract\>/
+	syn match luaBuiltIn /\<bit32\.lrotate\>/
+	syn match luaBuiltIn /\<bit32\.lshift\>/
+	syn match luaBuiltIn /\<bit32\.replace\>/
+	syn match luaBuiltIn /\<bit32\.rrotate\>/
+	syn match luaBuiltIn /\<bit32\.rshift\>/
+endif
+if lua_subversion < 2
+	syn match luaBuiltIn /\<math\.log10\>/
+	syn keyword luaBuiltIn unpack getfenv setfenv loadstring
+else
+	syn match luaBuiltIn /\<package\.searchpath\>/
+	syn keyword luaBuiltIn _ENV
+	syn match luaBuiltIn /\<table\.unpack\>/
+	syn match luaBuiltIn /\<debug\.getuservalue\>/
+	syn match luaBuiltIn /\<debug\.setuservalue\>/
+endif
 syn match luaBuiltIn /\<package\.cpath\>/
 syn match luaBuiltIn /\<package\.loaded\>/
 syn match luaBuiltIn /\<package\.loadlib\>/
@@ -213,7 +268,6 @@ syn match luaBuiltIn /\<string\.gmatch\>/
 syn match luaBuiltIn /\<string\.match\>/
 syn match luaBuiltIn /\<string\.reverse\>/
 syn match luaBuiltIn /\<table\.pack\>/
-syn match luaBuiltIn /\<table\.unpack\>/
 syn match luaBuiltIn /\<table\.concat\>/
 syn match luaBuiltIn /\<table\.sort\>/
 syn match luaBuiltIn /\<table\.insert\>/
@@ -222,7 +276,6 @@ syn match luaBuiltIn /\<math\.abs\>/
 syn match luaBuiltIn /\<math\.acos\>/
 syn match luaBuiltIn /\<math\.asin\>/
 syn match luaBuiltIn /\<math\.atan\>/
-syn match luaBuiltIn /\<math\.atan2\>/
 syn match luaBuiltIn /\<math\.ceil\>/
 syn match luaBuiltIn /\<math\.sin\>/
 syn match luaBuiltIn /\<math\.cos\>/
@@ -236,10 +289,6 @@ syn match luaBuiltIn /\<math\.min\>/
 syn match luaBuiltIn /\<math\.huge\>/
 syn match luaBuiltIn /\<math\.fmod\>/
 syn match luaBuiltIn /\<math\.modf\>/
-syn match luaBuiltIn /\<math\.ult\>/
-syn match luaBuiltIn /\<math\.tointeger\>/
-syn match luaBuiltIn /\<math\.maxinteger\>/
-syn match luaBuiltIn /\<math\.mininteger\>/
 syn match luaBuiltIn /\<math\.pow\>/
 syn match luaBuiltIn /\<math\.rad\>/
 syn match luaBuiltIn /\<math\.sqrt\>/
@@ -283,16 +332,8 @@ syn match luaBuiltIn /\<debug\.traceback\>/
 syn match luaBuiltIn /\<debug\.getmetatable\>/
 syn match luaBuiltIn /\<debug\.setmetatable\>/
 syn match luaBuiltIn /\<debug\.getregistry\>/
-syn match luaBuiltIn /\<debug\.getuservalue\>/
-syn match luaBuiltIn /\<debug\.setuservalue\>/
 syn match luaBuiltIn /\<debug\.upvalueid\>/
 syn match luaBuiltIn /\<debug\.upvaluejoin\>/
-syn match luaBuiltIn /\<utf8\.char\>/
-syn match luaBuiltIn /\<utf8\.charpattern\>/
-syn match luaBuiltIn /\<utf8\.codepoint\>/
-syn match luaBuiltIn /\<utf8\.codes\>/
-syn match luaBuiltIn /\<utf8\.len\>/
-syn match luaBuiltIn /\<utf8\.offset\>/
 
 " }}}
 " {{{ Highlight
