@@ -1,5 +1,7 @@
 " Options:	lua_subversion = 1, 2, 3, or 4
 "               default: 3
+"               lua_enable_emmylua = 0 or 1
+"               default: 1
 
 if exists("b:current_syntax")
 	finish
@@ -10,6 +12,9 @@ set cpo&vim
 
 if !exists("lua_subversion")
 	let lua_subversion = 3
+endif
+if !exists("lua_enable_emmylua")
+	let lua_enable_emmylua = 1
 endif
 
 syn case match
@@ -49,6 +54,79 @@ syn match luaComment /--.*$/ contains=luaTodo,@Spell
 syn keyword luaTodo contained TODO FIXME XXX
 syn region luaLongComment start=/--\[\z(=*\)\[/ end=/\]\z1\]/
 
+" }}}
+" {{{ Emmylua
+if lua_enable_emmylua == 1
+	syn match luaEmmyComment /---.*$/ contains=luaTodo,@Spell
+	syn match luaEmmyType /\K\k*/ contained containedin=luaEmmyComment
+	syn match luaEmmyClassColon /:/ contained containedin=luaEmmyComment
+		\ nextgroup=luaEmmyType
+		\ skipnl skipempty skipwhite
+	syn match luaEmmyBar /|/ contained containedin=luaEmmyComment
+		\ nextgroup=luaEmmyType
+		\ skipnl skipempty skipwhite
+	syn match luaEmmyClassName /\K\k*/ contained
+		\ nextgroup=luaEmmyClassColon
+		\ skipnl skipempty skipwhite
+	syn match luaEmmyKeyword /@class/ contained containedin=luaEmmyComment
+		\ nextgroup=luaEmmyClassName
+		\ skipnl skipempty skipwhite
+	syn match luaEmmyKeyword /@type/ contained containedin=luaEmmyComment
+		\ nextgroup=luaEmmyType
+		\ skipnl skipempty skipwhite
+	syn match luaEmmyAliasName /\K\k*/ contained containedin=luaEmmyComment
+		\ nextgroup=luaEmmyType
+		\ skipnl skipempty skipwhite
+	syn match luaEmmyKeyword /@alias/ contained containedin=luaEmmyComment
+		\ nextgroup=luaEmmyAliasName
+		\ skipnl skipempty skipwhite
+	syn match luaEmmyParamName /\K\k*/ contained containedin=luaEmmyComment
+		\ nextgroup=luaEmmyType
+		\ skipnl skipempty skipwhite
+	syn match luaEmmyKeyword /@param/ contained containedin=luaEmmyComment
+		\ nextgroup=luaEmmyParamName
+		\ skipnl skipempty skipwhite
+	syn match luaEmmyKeyword /@return/ contained containedin=luaEmmyComment
+		\ nextgroup=luaEmmyType
+		\ skipnl skipempty skipwhite
+	syn match luaEmmyFieldName /\K\k*/ contained containedin=luaEmmyComment
+		\ nextgroup=luaEmmyType
+		\ skipnl skipempty skipwhite
+	syn match luaEmmyFieldExposure /\<\%(public\|protected\|private\)\>/ contained containedin=luaEmmyComment
+		\ nextgroup=luaEmmyFieldName
+		\ skipnl skipempty skipwhite
+	syn match luaEmmyKeyword /@field/ contained containedin=luaEmmyComment
+		\ nextgroup=luaEmmyFieldExposure,luaEmmyFieldName
+		\ skipnl skipempty skipwhite
+	syn match luaEmmyGenericParentName /\K\k*/ contained containedin=luaEmmyComment
+		\ nextgroup=luaEmmyComma
+		\ skipnl skipempty skipwhite
+	syn match luaEmmyGenericColon /:/ contained containedin=luaEmmyComment
+		\ nextgroup=luaEmmyGenericParentName
+		\ skipnl skipempty skipwhite
+	syn match luaEmmyGenericComma /,/ contained containedin=luaEmmyComment
+		\ nextgroup=luaEmmyGenericName
+		\ skipnl skipempty skipwhite
+	syn match luaEmmyGenericName /\K\k*/ contained containedin=luaEmmyComment
+		\ nextgroup=luaEmmyGenericColon,luaEmmyGenericComma
+		\ skipnl skipempty skipwhite
+	syn match luaEmmyKeyword /@generic/ contained containedin=luaEmmyComment
+		\ nextgroup=luaEmmyGenericName
+		\ skipnl skipempty skipwhite
+	syn match luaEmmyKeyword /@vararg/ contained containedin=luaEmmyComment
+		\ nextgroup=luaEmmyType
+		\ skipnl skipempty skipwhite
+	"TODO make a plugin that makes this work
+	syn match luaEmmyLang /\K\k*/ contained containedin=luaEmmyComment
+	syn match luaEmmyKeyword /@language/ contained containedin=luaEmmyComment
+		\ nextgroup=luaEmmyLang
+		\ skipnl skipempty skipwhite
+	syn match luaEmmySeeReference /\K\k*#\K\k*/ contained containedin=luaEmmyComment
+	syn match luaEmmyKeyword /@see/ contained containedin=luaEmmyComment
+		\ nextgroup=luaEmmySeeReference
+		\ skipnl skipempty skipwhite
+
+endif
 " }}}
 " {{{ local ... <const>, break, return, self
 if lua_subversion >= 4
@@ -369,6 +447,17 @@ hi def link luaOperator              Operator
 hi def link luaBuiltin               Identifier
 hi def link luaError                 Error
 hi def link luaTodo                  Todo
+hi def link luaEmmyComment           Comment
+hi def link luaEmmyClassName         Special
+hi def link luaEmmyType              Type
+hi def link luaEmmyAliasName         Special
+hi def link luaEmmyParamName         Special
+hi def link luaEmmyFieldName         Special
+hi def link luaEmmyFieldExposure     StorageClass
+hi def link luaEmmyGenericName       Special
+hi def link luaEmmyGenericParentName Type
+hi def link luaEmmySeeReference      SpecialComment
+hi def link luaEmmyKeyword           PreProc
 " }}}
 
 let b:current_syntax = "lua"
