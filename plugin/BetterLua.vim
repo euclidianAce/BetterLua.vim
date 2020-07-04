@@ -4,6 +4,7 @@ function BetterLua#GetLuaColors()
 		if g:colors_name == "dracula"
 			hi! link luaAttrib       DraculaOrangeItalic
 			hi! link luaSelf         DraculaPurpleItailc
+			hi! link luaBuiltIn      DraculaCyan
 		endif
 	endif
 endfunction
