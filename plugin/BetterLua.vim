@@ -2,9 +2,9 @@
 function BetterLua#GetLuaColors()
 	if exists("g:colors_name")
 		if g:colors_name == "dracula"
-			hi! link luaAttrib       DraculaOrangeItalic
-			hi! link luaSelf         DraculaPurpleItailc
-			hi! link luaBuiltIn      DraculaCyan
+			hi! link luaSelf            DraculaPurpleItailc
+			hi! link luaBuiltIn         DraculaCyan
+			hi! link luaFunctionArgName DraculaOrangeItalic
 		endif
 	endif
 	if exists("g:loaded_endwise")

@@ -244,8 +244,8 @@ if lua_subversion >= 2
 	syn match luaSpecial contained #\\z#
 endif
 syn region luaLongString matchgroup=luaString start="\[\z(=*\)\[" end="\]\z1\]" contains=@Spell
-syn region luaString  start=+'+ end=+'+ skip=+\\\\\|\\'+ contains=luaSpecial,@Spell
-syn region luaString  start=+"+ end=+"+ skip=+\\\\\|\\"+ contains=luaSpecial,@Spell
+syn region luaString  start=+'+ end=+'\|$+ skip=+\\\\\|\\'+ contains=luaSpecial,@Spell
+syn region luaString  start=+"+ end=+"\|$+ skip=+\\\\\|\\"+ contains=luaSpecial,@Spell
 " }}}
 " {{{ Numbers
 " integer number
