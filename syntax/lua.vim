@@ -13,7 +13,7 @@ set cpo&vim
 if !exists("lua_subversion")
 	let lua_subversion = 3
 endif
-if !exists("lua_enable_emmylua")
+if !exists("BetterLua_enable_emmylua")
 	let BetterLua_enable_emmylua = 1
 endif
 
@@ -56,7 +56,7 @@ syn region luaLongComment start=/--\[\z(=*\)\[/ end=/\]\z1\]/
 
 " }}}
 " {{{ Emmylua
-if lua_enable_emmylua == 1
+if BetterLua_enable_emmylua == 1
 	syn match luaEmmyComment /---.*$/ contains=luaTodo,@Spell
 	syn match luaEmmyType /\K\k*/ contained containedin=luaEmmyComment
 	syn match luaEmmyClassColon /:/ contained containedin=luaEmmyComment
