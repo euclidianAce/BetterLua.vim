@@ -5,6 +5,10 @@ Edited from the original vim file, it adds support for 5.3 and 5.4, while
 removing support for 4.0 and 5.0 because literally nobody ever uses those
 anymore.
 
+# Options
+- set g:lua\_subversion to change the highlighting of the standard library
+- set g:BetterLua\_enable\_emmylua to 0 to turn off EmmyLua comment highlighting
+
 # Changes
 - Built in functions are given a different highlight group so they actually show
   up by default
@@ -43,5 +47,6 @@ anymore.
   	- `luaVarargs`
 
 # TODO
+- Add luajit
 - Add screenshots
 - Probably some testing, some proof-reading, and refactors

@@ -1,6 +1,6 @@
 " Options:	lua_subversion = 1, 2, 3, or 4
 "               default: 3
-"               lua_enable_emmylua = 0 or 1
+"               BetterLua_enable_emmylua = 0 or 1
 "               default: 1
 
 if exists("b:current_syntax")
@@ -14,7 +14,7 @@ if !exists("lua_subversion")
 	let lua_subversion = 3
 endif
 if !exists("lua_enable_emmylua")
-	let lua_enable_emmylua = 1
+	let BetterLua_enable_emmylua = 1
 endif
 
 syn case match
