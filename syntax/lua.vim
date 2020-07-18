@@ -21,7 +21,7 @@ syn case match
 syn sync fromstart
 
 syn cluster luaBase contains=
-	\ luaComment,luaLongComment,
+	\ luaComment,luaLongComment,luaEmmyComment,
 	\ luaConstant,luaNumber,luaString,luaLongString
 syn cluster luaExpression contains=
 	\ @luaBase,luaParen,luaBuiltin,luaBracket,luaBrace,
@@ -126,6 +126,7 @@ if BetterLua_enable_emmylua == 1
 		\ nextgroup=luaEmmySeeReference
 		\ skipnl skipempty skipwhite
 
+	syn match luaEmmyFluff /[^@-]\S*/ contained containedin=luaEmmyComment
 endif
 " }}}
 " {{{ local ... <const>, break, return, self
