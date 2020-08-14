@@ -59,6 +59,8 @@ syn region luaLongComment start=/--\[\z(=*\)\[/ end=/\]\z1\]/
 if BetterLua_enable_emmylua == 1
 	syn match luaEmmyComment /---.*$/ contains=luaTodo,@Spell
 	syn match luaEmmyType /\K\k*/ contained containedin=luaEmmyComment
+		\ nextgroup=luaEmmyBar
+		\ skipnl skipempty skipwhite
 	syn match luaEmmyClassColon /:/ contained containedin=luaEmmyComment
 		\ nextgroup=luaEmmyType
 		\ skipnl skipempty skipwhite
