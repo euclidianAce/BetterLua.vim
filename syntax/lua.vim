@@ -446,7 +446,7 @@ hi def link luaComment               Comment
 hi def link luaLongComment           Comment
 hi def link luaConstant              Constant
 hi def link luaNumber                Number
-hi def link luaOperator              Operator
+hi def link luaOperator              Keyword
 hi def link luaBuiltIn               Identifier
 hi def link luaError                 Error
 hi def link luaTodo                  Todo
